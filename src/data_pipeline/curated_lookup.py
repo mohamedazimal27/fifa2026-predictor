@@ -19,7 +19,9 @@ class CuratedLookup:
             return {
                 "coach": "Unknown",
                 "is_interim": False,
-                "squad_quality": 1.0
+                "squad_quality": 1.0,
+                "tenure_days": 0,
+                "start_date": None
             }
             
         dt = pd.to_datetime(match_date)
@@ -27,7 +29,9 @@ class CuratedLookup:
         result = {
             "coach": "Unknown",
             "is_interim": False,
-            "squad_quality": 1.0
+            "squad_quality": 1.0,
+            "tenure_days": 0,
+            "start_date": None
         }
         
         if team_name not in self.data:
@@ -38,13 +42,16 @@ class CuratedLookup:
         # 1. Lookup Coach
         found_coach = "Unknown"
         is_interim = False
+        tenure_days = 0
+        start_date = None
         for coach in team_info.get("coaches", []):
             start_dt = pd.to_datetime(coach["start"])
             end_dt = pd.to_datetime(coach["end"])
             if start_dt <= dt <= end_dt:
                 found_coach = coach["name"]
-                tenure_days = (end_dt - start_dt).days
-                is_interim = (tenure_days < 180)
+                tenure_days = (dt - start_dt).days
+                is_interim = ((end_dt - start_dt).days < 180)
+                start_date = coach["start"]
                 break
                 
         # 2. Lookup Squad Quality
@@ -59,5 +66,7 @@ class CuratedLookup:
         return {
             "coach": found_coach,
             "is_interim": is_interim,
-            "squad_quality": squad_quality
+            "squad_quality": squad_quality,
+            "tenure_days": tenure_days,
+            "start_date": start_date
         }

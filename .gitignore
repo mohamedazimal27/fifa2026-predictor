@@ -3,3 +3,6 @@ __pycache__/
 *.pyc
 .ipynb_checkpoints/
 .DS_Store
+.pytest_cache/
+data/merged_results.csv
+models/

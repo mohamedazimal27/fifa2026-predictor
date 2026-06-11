@@ -1,0 +1,1167 @@
+{
+    "Afghanistan": {
+        "code": "AF",
+        "canonical_name": "Afghanistan",
+        "elo_file": "Afghanistan.tsv"
+    },
+    "Albania": {
+        "code": "AL",
+        "canonical_name": "Albania",
+        "elo_file": "Albania.tsv"
+    },
+    "Algeria": {
+        "code": "DZ",
+        "canonical_name": "Algeria",
+        "elo_file": "Algeria.tsv"
+    },
+    "American Samoa": {
+        "code": "AS",
+        "canonical_name": "Eastern Samoa",
+        "elo_file": "Eastern_Samoa.tsv"
+    },
+    "Andorra": {
+        "code": "AD",
+        "canonical_name": "Andorra",
+        "elo_file": "Andorra.tsv"
+    },
+    "Angola": {
+        "code": "AO",
+        "canonical_name": "Angola",
+        "elo_file": "Angola.tsv"
+    },
+    "Anguilla": {
+        "code": "AI",
+        "canonical_name": "Anguilla",
+        "elo_file": "Anguilla.tsv"
+    },
+    "Antigua and Barbuda": {
+        "code": "AG",
+        "canonical_name": "Antigua and Barbuda",
+        "elo_file": "Antigua_and_Barbuda.tsv"
+    },
+    "Argentina": {
+        "code": "AR",
+        "canonical_name": "Argentina",
+        "elo_file": "Argentina.tsv"
+    },
+    "Armenia": {
+        "code": "AM",
+        "canonical_name": "Armenia",
+        "elo_file": "Armenia.tsv"
+    },
+    "Aruba": {
+        "code": "AW",
+        "canonical_name": "Aruba",
+        "elo_file": "Aruba.tsv"
+    },
+    "Australia": {
+        "code": "AU",
+        "canonical_name": "Australia",
+        "elo_file": "Australia.tsv"
+    },
+    "Austria": {
+        "code": "AT",
+        "canonical_name": "Austria",
+        "elo_file": "Austria.tsv"
+    },
+    "Azerbaijan": {
+        "code": "AZ",
+        "canonical_name": "Azerbaijan",
+        "elo_file": "Azerbaijan.tsv"
+    },
+    "Bahamas": {
+        "code": "BS",
+        "canonical_name": "Bahamas",
+        "elo_file": "Bahamas.tsv"
+    },
+    "Bahrain": {
+        "code": "BH",
+        "canonical_name": "Bahrain",
+        "elo_file": "Bahrain.tsv"
+    },
+    "Bangladesh": {
+        "code": "BD",
+        "canonical_name": "Bangladesh",
+        "elo_file": "Bangladesh.tsv"
+    },
+    "Barbados": {
+        "code": "BB",
+        "canonical_name": "Barbados",
+        "elo_file": "Barbados.tsv"
+    },
+    "Belarus": {
+        "code": "BY",
+        "canonical_name": "Belarus",
+        "elo_file": "Belarus.tsv"
+    },
+    "Belgium": {
+        "code": "BE",
+        "canonical_name": "Belgium",
+        "elo_file": "Belgium.tsv"
+    },
+    "Belize": {
+        "code": "BZ",
+        "canonical_name": "Belize",
+        "elo_file": "Belize.tsv"
+    },
+    "Benin": {
+        "code": "BJ",
+        "canonical_name": "Benin",
+        "elo_file": "Benin.tsv"
+    },
+    "Bermuda": {
+        "code": "BM",
+        "canonical_name": "Bermuda",
+        "elo_file": "Bermuda.tsv"
+    },
+    "Bhutan": {
+        "code": "BT",
+        "canonical_name": "Bhutan",
+        "elo_file": "Bhutan.tsv"
+    },
+    "Bolivia": {
+        "code": "BO",
+        "canonical_name": "Bolivia",
+        "elo_file": "Bolivia.tsv"
+    },
+    "Bonaire": {
+        "code": "BQ",
+        "canonical_name": "Bonaire",
+        "elo_file": "Bonaire.tsv"
+    },
+    "Bosnia and Herzegovina": {
+        "code": "BA",
+        "canonical_name": "Bosnia and Herzegovina",
+        "elo_file": "Bosnia_and_Herzegovina.tsv"
+    },
+    "Botswana": {
+        "code": "BW",
+        "canonical_name": "Botswana",
+        "elo_file": "Botswana.tsv"
+    },
+    "Brazil": {
+        "code": "BR",
+        "canonical_name": "Brazil",
+        "elo_file": "Brazil.tsv"
+    },
+    "British Virgin Islands": {
+        "code": "VG",
+        "canonical_name": "British Virgin Islands",
+        "elo_file": "British_Virgin_Islands.tsv"
+    },
+    "Brunei": {
+        "code": "BN",
+        "canonical_name": "Brunei",
+        "elo_file": "Brunei.tsv"
+    },
+    "Bulgaria": {
+        "code": "BG",
+        "canonical_name": "Bulgaria",
+        "elo_file": "Bulgaria.tsv"
+    },
+    "Burkina Faso": {
+        "code": "BF",
+        "canonical_name": "Burkina Faso",
+        "elo_file": "Burkina_Faso.tsv"
+    },
+    "Burundi": {
+        "code": "BI",
+        "canonical_name": "Burundi",
+        "elo_file": "Burundi.tsv"
+    },
+    "Cambodia": {
+        "code": "KH",
+        "canonical_name": "Cambodia",
+        "elo_file": "Cambodia.tsv"
+    },
+    "Cameroon": {
+        "code": "CM",
+        "canonical_name": "Cameroon",
+        "elo_file": "Cameroon.tsv"
+    },
+    "Canada": {
+        "code": "CA",
+        "canonical_name": "Canada",
+        "elo_file": "Canada.tsv"
+    },
+    "Cape Verde": {
+        "code": "CV",
+        "canonical_name": "Cape Verde",
+        "elo_file": "Cape_Verde.tsv"
+    },
+    "Cayman Islands": {
+        "code": "KY",
+        "canonical_name": "Cayman Islands",
+        "elo_file": "Cayman_Islands.tsv"
+    },
+    "Central African Republic": {
+        "code": "CF",
+        "canonical_name": "Central African Republic",
+        "elo_file": "Central_African_Republic.tsv"
+    },
+    "Chad": {
+        "code": "TD",
+        "canonical_name": "Chad",
+        "elo_file": "Chad.tsv"
+    },
+    "Chagos Islands": {
+        "code": "HG",
+        "canonical_name": "Chagos Islands",
+        "elo_file": "Chagos_Islands.tsv"
+    },
+    "Chile": {
+        "code": "CL",
+        "canonical_name": "Chile",
+        "elo_file": "Chile.tsv"
+    },
+    "China": {
+        "code": "CN",
+        "canonical_name": "China",
+        "elo_file": "China.tsv"
+    },
+    "Colombia": {
+        "code": "CO",
+        "canonical_name": "Colombia",
+        "elo_file": "Colombia.tsv"
+    },
+    "Comoros": {
+        "code": "KM",
+        "canonical_name": "Comoros",
+        "elo_file": "Comoros.tsv"
+    },
+    "Congo": {
+        "code": "CG",
+        "canonical_name": "Congo",
+        "elo_file": "Congo.tsv"
+    },
+    "Cook Islands": {
+        "code": "CK",
+        "canonical_name": "Cook Islands",
+        "elo_file": "Cook_Islands.tsv"
+    },
+    "Costa Rica": {
+        "code": "CR",
+        "canonical_name": "Costa Rica",
+        "elo_file": "Costa_Rica.tsv"
+    },
+    "Croatia": {
+        "code": "HR",
+        "canonical_name": "Croatia",
+        "elo_file": "Croatia.tsv"
+    },
+    "Cuba": {
+        "code": "CU",
+        "canonical_name": "Cuba",
+        "elo_file": "Cuba.tsv"
+    },
+    "Curaçao": {
+        "code": "CW",
+        "canonical_name": "Curaçao",
+        "elo_file": "Curacao.tsv"
+    },
+    "Cyprus": {
+        "code": "CY",
+        "canonical_name": "Cyprus",
+        "elo_file": "Cyprus.tsv"
+    },
+    "Czech Republic": {
+        "code": "CZ",
+        "canonical_name": "Czechia",
+        "elo_file": "Czechia.tsv"
+    },
+    "DR Congo": {
+        "code": "CD",
+        "canonical_name": "DR Congo",
+        "elo_file": "DR_Congo.tsv"
+    },
+    "Denmark": {
+        "code": "DK",
+        "canonical_name": "Denmark",
+        "elo_file": "Denmark.tsv"
+    },
+    "Djibouti": {
+        "code": "DJ",
+        "canonical_name": "Djibouti",
+        "elo_file": "Djibouti.tsv"
+    },
+    "Dominica": {
+        "code": "DM",
+        "canonical_name": "Dominica",
+        "elo_file": "Dominica.tsv"
+    },
+    "Dominican Republic": {
+        "code": "DO",
+        "canonical_name": "Dominican Republic",
+        "elo_file": "Dominican_Republic.tsv"
+    },
+    "Ecuador": {
+        "code": "EC",
+        "canonical_name": "Ecuador",
+        "elo_file": "Ecuador.tsv"
+    },
+    "Egypt": {
+        "code": "EG",
+        "canonical_name": "Egypt",
+        "elo_file": "Egypt.tsv"
+    },
+    "El Salvador": {
+        "code": "SV",
+        "canonical_name": "El Salvador",
+        "elo_file": "El_Salvador.tsv"
+    },
+    "England": {
+        "code": "EN",
+        "canonical_name": "England",
+        "elo_file": "England.tsv"
+    },
+    "Equatorial Guinea": {
+        "code": "GQ",
+        "canonical_name": "Equatorial Guinea",
+        "elo_file": "Equatorial_Guinea.tsv"
+    },
+    "Eritrea": {
+        "code": "ER",
+        "canonical_name": "Eritrea",
+        "elo_file": "Eritrea.tsv"
+    },
+    "Estonia": {
+        "code": "EE",
+        "canonical_name": "Estonia",
+        "elo_file": "Estonia.tsv"
+    },
+    "Eswatini": {
+        "code": "SW",
+        "canonical_name": "Eswatini",
+        "elo_file": "Eswatini.tsv"
+    },
+    "Ethiopia": {
+        "code": "ET",
+        "canonical_name": "Ethiopia",
+        "elo_file": "Ethiopia.tsv"
+    },
+    "Falkland Islands": {
+        "code": "FK",
+        "canonical_name": "Falkland Islands",
+        "elo_file": "Falkland_Islands.tsv"
+    },
+    "Faroe Islands": {
+        "code": "FO",
+        "canonical_name": "Faroe Islands",
+        "elo_file": "Faroe_Islands.tsv"
+    },
+    "Fiji": {
+        "code": "FJ",
+        "canonical_name": "Fiji",
+        "elo_file": "Fiji.tsv"
+    },
+    "Finland": {
+        "code": "FI",
+        "canonical_name": "Finland",
+        "elo_file": "Finland.tsv"
+    },
+    "France": {
+        "code": "FR",
+        "canonical_name": "France",
+        "elo_file": "France.tsv"
+    },
+    "French Guiana": {
+        "code": "GF",
+        "canonical_name": "French Guiana",
+        "elo_file": "French_Guiana.tsv"
+    },
+    "Gabon": {
+        "code": "GA",
+        "canonical_name": "Gabon",
+        "elo_file": "Gabon.tsv"
+    },
+    "Gambia": {
+        "code": "GM",
+        "canonical_name": "Gambia",
+        "elo_file": "Gambia.tsv"
+    },
+    "Georgia": {
+        "code": "GE",
+        "canonical_name": "Georgia",
+        "elo_file": "Georgia.tsv"
+    },
+    "Germany": {
+        "code": "DE",
+        "canonical_name": "Germany",
+        "elo_file": "Germany.tsv"
+    },
+    "Ghana": {
+        "code": "GH",
+        "canonical_name": "Ghana",
+        "elo_file": "Ghana.tsv"
+    },
+    "Gibraltar": {
+        "code": "GI",
+        "canonical_name": "Gibraltar",
+        "elo_file": "Gibraltar.tsv"
+    },
+    "Greece": {
+        "code": "GR",
+        "canonical_name": "Greece",
+        "elo_file": "Greece.tsv"
+    },
+    "Greenland": {
+        "code": "GL",
+        "canonical_name": "Greenland",
+        "elo_file": "Greenland.tsv"
+    },
+    "Grenada": {
+        "code": "GD",
+        "canonical_name": "Grenada",
+        "elo_file": "Grenada.tsv"
+    },
+    "Guadeloupe": {
+        "code": "GP",
+        "canonical_name": "Guadeloupe",
+        "elo_file": "Guadeloupe.tsv"
+    },
+    "Guam": {
+        "code": "GU",
+        "canonical_name": "Guam",
+        "elo_file": "Guam.tsv"
+    },
+    "Guatemala": {
+        "code": "GT",
+        "canonical_name": "Guatemala",
+        "elo_file": "Guatemala.tsv"
+    },
+    "Guinea": {
+        "code": "GN",
+        "canonical_name": "Guinea",
+        "elo_file": "Guinea.tsv"
+    },
+    "Guinea-Bissau": {
+        "code": "GW",
+        "canonical_name": "Guinea-Bissau",
+        "elo_file": "Guinea-Bissau.tsv"
+    },
+    "Guyana": {
+        "code": "GY",
+        "canonical_name": "Guyana",
+        "elo_file": "Guyana.tsv"
+    },
+    "Haiti": {
+        "code": "HT",
+        "canonical_name": "Haiti",
+        "elo_file": "Haiti.tsv"
+    },
+    "Honduras": {
+        "code": "HN",
+        "canonical_name": "Honduras",
+        "elo_file": "Honduras.tsv"
+    },
+    "Hong Kong": {
+        "code": "HK",
+        "canonical_name": "Hong Kong",
+        "elo_file": "Hong_Kong.tsv"
+    },
+    "Hungary": {
+        "code": "HU",
+        "canonical_name": "Hungary",
+        "elo_file": "Hungary.tsv"
+    },
+    "Iceland": {
+        "code": "IS",
+        "canonical_name": "Iceland",
+        "elo_file": "Iceland.tsv"
+    },
+    "India": {
+        "code": "IN",
+        "canonical_name": "India",
+        "elo_file": "India.tsv"
+    },
+    "Indonesia": {
+        "code": "ID",
+        "canonical_name": "Indonesia",
+        "elo_file": "Indonesia.tsv"
+    },
+    "Iran": {
+        "code": "IR",
+        "canonical_name": "Iran",
+        "elo_file": "Iran.tsv"
+    },
+    "Iraq": {
+        "code": "IQ",
+        "canonical_name": "Iraq",
+        "elo_file": "Iraq.tsv"
+    },
+    "Israel": {
+        "code": "IL",
+        "canonical_name": "Israel",
+        "elo_file": "Israel.tsv"
+    },
+    "Italy": {
+        "code": "IT",
+        "canonical_name": "Italy",
+        "elo_file": "Italy.tsv"
+    },
+    "Ivory Coast": {
+        "code": "CI",
+        "canonical_name": "Ivory Coast",
+        "elo_file": "Ivory_Coast.tsv"
+    },
+    "Jamaica": {
+        "code": "JM",
+        "canonical_name": "Jamaica",
+        "elo_file": "Jamaica.tsv"
+    },
+    "Japan": {
+        "code": "JP",
+        "canonical_name": "Japan",
+        "elo_file": "Japan.tsv"
+    },
+    "Jordan": {
+        "code": "JO",
+        "canonical_name": "Jordan",
+        "elo_file": "Jordan.tsv"
+    },
+    "Kazakhstan": {
+        "code": "KZ",
+        "canonical_name": "Kazakhstan",
+        "elo_file": "Kazakhstan.tsv"
+    },
+    "Kenya": {
+        "code": "KE",
+        "canonical_name": "Kenya",
+        "elo_file": "Kenya.tsv"
+    },
+    "Kiribati": {
+        "code": "KI",
+        "canonical_name": "Kiribati",
+        "elo_file": "Kiribati.tsv"
+    },
+    "Kosovo": {
+        "code": "KO",
+        "canonical_name": "Kosovo",
+        "elo_file": "Kosovo.tsv"
+    },
+    "Kurdistan": {
+        "code": "KD",
+        "canonical_name": "Kurdistan",
+        "elo_file": "Kurdistan.tsv"
+    },
+    "Kuwait": {
+        "code": "KW",
+        "canonical_name": "Kuwait",
+        "elo_file": "Kuwait.tsv"
+    },
+    "Kyrgyzstan": {
+        "code": "KG",
+        "canonical_name": "Kyrgyzstan",
+        "elo_file": "Kyrgyzstan.tsv"
+    },
+    "Laos": {
+        "code": "LA",
+        "canonical_name": "Laos",
+        "elo_file": "Laos.tsv"
+    },
+    "Latvia": {
+        "code": "LV",
+        "canonical_name": "Latvia",
+        "elo_file": "Latvia.tsv"
+    },
+    "Lebanon": {
+        "code": "LB",
+        "canonical_name": "Lebanon",
+        "elo_file": "Lebanon.tsv"
+    },
+    "Lesotho": {
+        "code": "LS",
+        "canonical_name": "Lesotho",
+        "elo_file": "Lesotho.tsv"
+    },
+    "Liberia": {
+        "code": "LR",
+        "canonical_name": "Liberia",
+        "elo_file": "Liberia.tsv"
+    },
+    "Libya": {
+        "code": "LY",
+        "canonical_name": "Libya",
+        "elo_file": "Libya.tsv"
+    },
+    "Liechtenstein": {
+        "code": "LI",
+        "canonical_name": "Liechtenstein",
+        "elo_file": "Liechtenstein.tsv"
+    },
+    "Lithuania": {
+        "code": "LT",
+        "canonical_name": "Lithuania",
+        "elo_file": "Lithuania.tsv"
+    },
+    "Luxembourg": {
+        "code": "LU",
+        "canonical_name": "Luxembourg",
+        "elo_file": "Luxembourg.tsv"
+    },
+    "Macau": {
+        "code": "MO",
+        "canonical_name": "Macao",
+        "elo_file": "Macao.tsv"
+    },
+    "Madagascar": {
+        "code": "MG",
+        "canonical_name": "Madagascar",
+        "elo_file": "Madagascar.tsv"
+    },
+    "Malawi": {
+        "code": "MW",
+        "canonical_name": "Malawi",
+        "elo_file": "Malawi.tsv"
+    },
+    "Malaysia": {
+        "code": "MY",
+        "canonical_name": "Malaysia",
+        "elo_file": "Malaysia.tsv"
+    },
+    "Maldives": {
+        "code": "MV",
+        "canonical_name": "Maldives",
+        "elo_file": "Maldives.tsv"
+    },
+    "Mali": {
+        "code": "ML",
+        "canonical_name": "Mali",
+        "elo_file": "Mali.tsv"
+    },
+    "Malta": {
+        "code": "MT",
+        "canonical_name": "Malta",
+        "elo_file": "Malta.tsv"
+    },
+    "Marshall Islands": {
+        "code": "MH",
+        "canonical_name": "Marshall Islands",
+        "elo_file": "Marshall_Islands.tsv"
+    },
+    "Martinique": {
+        "code": "MQ",
+        "canonical_name": "Martinique",
+        "elo_file": "Martinique.tsv"
+    },
+    "Mauritania": {
+        "code": "MR",
+        "canonical_name": "Mauritania",
+        "elo_file": "Mauritania.tsv"
+    },
+    "Mauritius": {
+        "code": "MU",
+        "canonical_name": "Mauritius",
+        "elo_file": "Mauritius.tsv"
+    },
+    "Mayotte": {
+        "code": "YT",
+        "canonical_name": "Mayotte",
+        "elo_file": "Mayotte.tsv"
+    },
+    "Mexico": {
+        "code": "MX",
+        "canonical_name": "Mexico",
+        "elo_file": "Mexico.tsv"
+    },
+    "Moldova": {
+        "code": "MD",
+        "canonical_name": "Moldova",
+        "elo_file": "Moldova.tsv"
+    },
+    "Monaco": {
+        "code": "MC",
+        "canonical_name": "Monaco",
+        "elo_file": "Monaco.tsv"
+    },
+    "Mongolia": {
+        "code": "MN",
+        "canonical_name": "Mongolia",
+        "elo_file": "Mongolia.tsv"
+    },
+    "Montenegro": {
+        "code": "ME",
+        "canonical_name": "Montenegro",
+        "elo_file": "Montenegro.tsv"
+    },
+    "Montserrat": {
+        "code": "MS",
+        "canonical_name": "Montserrat",
+        "elo_file": "Montserrat.tsv"
+    },
+    "Morocco": {
+        "code": "MA",
+        "canonical_name": "Morocco",
+        "elo_file": "Morocco.tsv"
+    },
+    "Mozambique": {
+        "code": "MZ",
+        "canonical_name": "Mozambique",
+        "elo_file": "Mozambique.tsv"
+    },
+    "Myanmar": {
+        "code": "MM",
+        "canonical_name": "Myanmar",
+        "elo_file": "Myanmar.tsv"
+    },
+    "Namibia": {
+        "code": "NA",
+        "canonical_name": "Namibia",
+        "elo_file": "Namibia.tsv"
+    },
+    "Nepal": {
+        "code": "NP",
+        "canonical_name": "Nepal",
+        "elo_file": "Nepal.tsv"
+    },
+    "Netherlands": {
+        "code": "NL",
+        "canonical_name": "Netherlands",
+        "elo_file": "Netherlands.tsv"
+    },
+    "New Caledonia": {
+        "code": "NC",
+        "canonical_name": "New Caledonia",
+        "elo_file": "New_Caledonia.tsv"
+    },
+    "New Zealand": {
+        "code": "NZ",
+        "canonical_name": "New Zealand",
+        "elo_file": "New_Zealand.tsv"
+    },
+    "Nicaragua": {
+        "code": "NI",
+        "canonical_name": "Nicaragua",
+        "elo_file": "Nicaragua.tsv"
+    },
+    "Niger": {
+        "code": "NE",
+        "canonical_name": "Niger",
+        "elo_file": "Niger.tsv"
+    },
+    "Nigeria": {
+        "code": "NG",
+        "canonical_name": "Nigeria",
+        "elo_file": "Nigeria.tsv"
+    },
+    "North Korea": {
+        "code": "KP",
+        "canonical_name": "North Korea",
+        "elo_file": "North_Korea.tsv"
+    },
+    "North Macedonia": {
+        "code": "NM",
+        "canonical_name": "North Macedonia",
+        "elo_file": "North_Macedonia.tsv"
+    },
+    "Northern Cyprus": {
+        "code": "NS",
+        "canonical_name": "Northern Cyprus",
+        "elo_file": "Northern_Cyprus.tsv"
+    },
+    "Northern Ireland": {
+        "code": "EI",
+        "canonical_name": "Northern Ireland",
+        "elo_file": "Northern_Ireland.tsv"
+    },
+    "Northern Mariana Islands": {
+        "code": "MP",
+        "canonical_name": "Northern Mariana Islands",
+        "elo_file": "Northern_Mariana_Islands.tsv"
+    },
+    "Norway": {
+        "code": "NO",
+        "canonical_name": "Norway",
+        "elo_file": "Norway.tsv"
+    },
+    "Oman": {
+        "code": "OM",
+        "canonical_name": "Oman",
+        "elo_file": "Oman.tsv"
+    },
+    "Pakistan": {
+        "code": "PK",
+        "canonical_name": "Pakistan",
+        "elo_file": "Pakistan.tsv"
+    },
+    "Palestine": {
+        "code": "PS",
+        "canonical_name": "Palestine",
+        "elo_file": "Palestine.tsv"
+    },
+    "Panama": {
+        "code": "PA",
+        "canonical_name": "Panama",
+        "elo_file": "Panama.tsv"
+    },
+    "Papua New Guinea": {
+        "code": "PG",
+        "canonical_name": "Papua New Guinea",
+        "elo_file": "Papua_New_Guinea.tsv"
+    },
+    "Paraguay": {
+        "code": "PY",
+        "canonical_name": "Paraguay",
+        "elo_file": "Paraguay.tsv"
+    },
+    "Peru": {
+        "code": "PE",
+        "canonical_name": "Peru",
+        "elo_file": "Peru.tsv"
+    },
+    "Philippines": {
+        "code": "PH",
+        "canonical_name": "Philippines",
+        "elo_file": "Philippines.tsv"
+    },
+    "Poland": {
+        "code": "PL",
+        "canonical_name": "Poland",
+        "elo_file": "Poland.tsv"
+    },
+    "Portugal": {
+        "code": "PT",
+        "canonical_name": "Portugal",
+        "elo_file": "Portugal.tsv"
+    },
+    "Puerto Rico": {
+        "code": "PR",
+        "canonical_name": "Puerto Rico",
+        "elo_file": "Puerto_Rico.tsv"
+    },
+    "Qatar": {
+        "code": "QA",
+        "canonical_name": "Qatar",
+        "elo_file": "Qatar.tsv"
+    },
+    "Republic of Ireland": {
+        "code": "IE",
+        "canonical_name": "Ireland",
+        "elo_file": "Ireland.tsv"
+    },
+    "Romania": {
+        "code": "RO",
+        "canonical_name": "Romania",
+        "elo_file": "Romania.tsv"
+    },
+    "Russia": {
+        "code": "RU",
+        "canonical_name": "Russia",
+        "elo_file": "Russia.tsv"
+    },
+    "Rwanda": {
+        "code": "RW",
+        "canonical_name": "Rwanda",
+        "elo_file": "Rwanda.tsv"
+    },
+    "Saint Kitts and Nevis": {
+        "code": "KN",
+        "canonical_name": "Saint Kitts and Nevis",
+        "elo_file": "Saint_Kitts_and_Nevis.tsv"
+    },
+    "Saint Lucia": {
+        "code": "LC",
+        "canonical_name": "Saint Lucia",
+        "elo_file": "Saint_Lucia.tsv"
+    },
+    "Saint Martin": {
+        "code": "MF",
+        "canonical_name": "Saint Martin",
+        "elo_file": "Saint_Martin.tsv"
+    },
+    "Saint Pierre and Miquelon": {
+        "code": "PM",
+        "canonical_name": "Saint Pierre and Miquelon",
+        "elo_file": "Saint_Pierre_and_Miquelon.tsv"
+    },
+    "Saint Vincent and the Grenadines": {
+        "code": "VC",
+        "canonical_name": "Saint Vincent and the Grenadines",
+        "elo_file": "Saint_Vincent_and_the_Grenadines.tsv"
+    },
+    "Samoa": {
+        "code": "WS",
+        "canonical_name": "Samoa",
+        "elo_file": "Samoa.tsv"
+    },
+    "San Marino": {
+        "code": "SM",
+        "canonical_name": "San Marino",
+        "elo_file": "San_Marino.tsv"
+    },
+    "Saudi Arabia": {
+        "code": "SA",
+        "canonical_name": "Saudi Arabia",
+        "elo_file": "Saudi_Arabia.tsv"
+    },
+    "Scotland": {
+        "code": "SQ",
+        "canonical_name": "Scotland",
+        "elo_file": "Scotland.tsv"
+    },
+    "Senegal": {
+        "code": "SN",
+        "canonical_name": "Senegal",
+        "elo_file": "Senegal.tsv"
+    },
+    "Serbia": {
+        "code": "RS",
+        "canonical_name": "Serbia",
+        "elo_file": "Serbia.tsv"
+    },
+    "Seychelles": {
+        "code": "SC",
+        "canonical_name": "Seychelles",
+        "elo_file": "Seychelles.tsv"
+    },
+    "Sierra Leone": {
+        "code": "SL",
+        "canonical_name": "Sierra Leone",
+        "elo_file": "Sierra_Leone.tsv"
+    },
+    "Singapore": {
+        "code": "SG",
+        "canonical_name": "Singapore",
+        "elo_file": "Singapore.tsv"
+    },
+    "Sint Maarten": {
+        "code": "SX",
+        "canonical_name": "Sint Maarten",
+        "elo_file": "Sint_Maarten.tsv"
+    },
+    "Slovakia": {
+        "code": "SK",
+        "canonical_name": "Slovakia",
+        "elo_file": "Slovakia.tsv"
+    },
+    "Slovenia": {
+        "code": "SI",
+        "canonical_name": "Slovenia",
+        "elo_file": "Slovenia.tsv"
+    },
+    "Solomon Islands": {
+        "code": "SB",
+        "canonical_name": "Solomon Islands",
+        "elo_file": "Solomon_Islands.tsv"
+    },
+    "Somalia": {
+        "code": "SO",
+        "canonical_name": "Somalia",
+        "elo_file": "Somalia.tsv"
+    },
+    "Somaliland": {
+        "code": "JS",
+        "canonical_name": "Somaliland",
+        "elo_file": "Somaliland.tsv"
+    },
+    "South Africa": {
+        "code": "ZA",
+        "canonical_name": "South Africa",
+        "elo_file": "South_Africa.tsv"
+    },
+    "South Korea": {
+        "code": "KR",
+        "canonical_name": "South Korea",
+        "elo_file": "South_Korea.tsv"
+    },
+    "South Sudan": {
+        "code": "SS",
+        "canonical_name": "South Sudan",
+        "elo_file": "South_Sudan.tsv"
+    },
+    "Spain": {
+        "code": "ES",
+        "canonical_name": "Spain",
+        "elo_file": "Spain.tsv"
+    },
+    "Sri Lanka": {
+        "code": "LK",
+        "canonical_name": "Sri Lanka",
+        "elo_file": "Sri_Lanka.tsv"
+    },
+    "Sudan": {
+        "code": "SD",
+        "canonical_name": "Sudan",
+        "elo_file": "Sudan.tsv"
+    },
+    "Suriname": {
+        "code": "SR",
+        "canonical_name": "Suriname",
+        "elo_file": "Suriname.tsv"
+    },
+    "Sweden": {
+        "code": "SE",
+        "canonical_name": "Sweden",
+        "elo_file": "Sweden.tsv"
+    },
+    "Switzerland": {
+        "code": "CH",
+        "canonical_name": "Switzerland",
+        "elo_file": "Switzerland.tsv"
+    },
+    "Syria": {
+        "code": "SY",
+        "canonical_name": "Syria",
+        "elo_file": "Syria.tsv"
+    },
+    "São Tomé and Príncipe": {
+        "code": "ST",
+        "canonical_name": "Sao Tome and Principe",
+        "elo_file": "Sao_Tome_and_Principe.tsv"
+    },
+    "Tahiti": {
+        "code": "TI",
+        "canonical_name": "Tahiti",
+        "elo_file": "Tahiti.tsv"
+    },
+    "Taiwan": {
+        "code": "TW",
+        "canonical_name": "Taiwan",
+        "elo_file": "Taiwan.tsv"
+    },
+    "Tajikistan": {
+        "code": "TJ",
+        "canonical_name": "Tajikistan",
+        "elo_file": "Tajikistan.tsv"
+    },
+    "Tanzania": {
+        "code": "TZ",
+        "canonical_name": "Tanzania",
+        "elo_file": "Tanzania.tsv"
+    },
+    "Thailand": {
+        "code": "TH",
+        "canonical_name": "Thailand",
+        "elo_file": "Thailand.tsv"
+    },
+    "Tibet": {
+        "code": "TE",
+        "canonical_name": "Tibet",
+        "elo_file": "Tibet.tsv"
+    },
+    "Timor-Leste": {
+        "code": "TL",
+        "canonical_name": "East Timor",
+        "elo_file": "East_Timor.tsv"
+    },
+    "Togo": {
+        "code": "TG",
+        "canonical_name": "Togo",
+        "elo_file": "Togo.tsv"
+    },
+    "Tonga": {
+        "code": "TO",
+        "canonical_name": "Tonga",
+        "elo_file": "Tonga.tsv"
+    },
+    "Trinidad and Tobago": {
+        "code": "TT",
+        "canonical_name": "Trinidad and Tobago",
+        "elo_file": "Trinidad_and_Tobago.tsv"
+    },
+    "Tunisia": {
+        "code": "TN",
+        "canonical_name": "Tunisia",
+        "elo_file": "Tunisia.tsv"
+    },
+    "Turkey": {
+        "code": "TR",
+        "canonical_name": "Turkey",
+        "elo_file": "Turkey.tsv"
+    },
+    "Turkmenistan": {
+        "code": "TM",
+        "canonical_name": "Turkmenistan",
+        "elo_file": "Turkmenistan.tsv"
+    },
+    "Turks and Caicos Islands": {
+        "code": "TC",
+        "canonical_name": "Turks and Caicos Islands",
+        "elo_file": "Turks_and_Caicos_Islands.tsv"
+    },
+    "Tuvalu": {
+        "code": "TV",
+        "canonical_name": "Tuvalu",
+        "elo_file": "Tuvalu.tsv"
+    },
+    "Uganda": {
+        "code": "UG",
+        "canonical_name": "Uganda",
+        "elo_file": "Uganda.tsv"
+    },
+    "Ukraine": {
+        "code": "UA",
+        "canonical_name": "Ukraine",
+        "elo_file": "Ukraine.tsv"
+    },
+    "United Arab Emirates": {
+        "code": "AE",
+        "canonical_name": "United Arab Emirates",
+        "elo_file": "United_Arab_Emirates.tsv"
+    },
+    "United States": {
+        "code": "US",
+        "canonical_name": "United States",
+        "elo_file": "United_States.tsv"
+    },
+    "United States Virgin Islands": {
+        "code": "VI",
+        "canonical_name": "US Virgin Islands",
+        "elo_file": "US_Virgin_Islands.tsv"
+    },
+    "Uruguay": {
+        "code": "UY",
+        "canonical_name": "Uruguay",
+        "elo_file": "Uruguay.tsv"
+    },
+    "Uzbekistan": {
+        "code": "UZ",
+        "canonical_name": "Uzbekistan",
+        "elo_file": "Uzbekistan.tsv"
+    },
+    "Vanuatu": {
+        "code": "VU",
+        "canonical_name": "Vanuatu",
+        "elo_file": "Vanuatu.tsv"
+    },
+    "Venezuela": {
+        "code": "VE",
+        "canonical_name": "Venezuela",
+        "elo_file": "Venezuela.tsv"
+    },
+    "Vietnam": {
+        "code": "VN",
+        "canonical_name": "Vietnam",
+        "elo_file": "Vietnam.tsv"
+    },
+    "Wales": {
+        "code": "WA",
+        "canonical_name": "Wales",
+        "elo_file": "Wales.tsv"
+    },
+    "Western Sahara": {
+        "code": "EH",
+        "canonical_name": "Western Sahara",
+        "elo_file": "Western_Sahara.tsv"
+    },
+    "Yemen": {
+        "code": "YE",
+        "canonical_name": "Yemen",
+        "elo_file": "Yemen.tsv"
+    },
+    "Zambia": {
+        "code": "ZM",
+        "canonical_name": "Zambia",
+        "elo_file": "Zambia.tsv"
+    },
+    "Zanzibar": {
+        "code": "ZN",
+        "canonical_name": "Zanzibar",
+        "elo_file": "Zanzibar.tsv"
+    },
+    "Zimbabwe": {
+        "code": "ZW",
+        "canonical_name": "Zimbabwe",
+        "elo_file": "Zimbabwe.tsv"
+    }
+}

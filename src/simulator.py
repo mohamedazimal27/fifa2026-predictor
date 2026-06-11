@@ -1,6 +1,7 @@
 import os
 import pickle
 import json
+import random
 import numpy as np
 import pandas as pd
 from src.data_pipeline.curated_lookup import CuratedLookup
@@ -47,6 +48,12 @@ class TournamentSimulator:
         for group, teams in GROUPS_2026.items():
             for team in teams:
                 self.starting_elos[team] = self._get_latest_elo(team)
+                
+        # Pre-cache team features to avoid looking them up repeatedly
+        self.team_features = {}
+        for group, teams in GROUPS_2026.items():
+            for team in teams:
+                self.team_features[team] = self._get_team_features_for_2026(team)
                 
         # Pre-compute match probabilities cache for all 48 teams
         self.matchup_cache = {}
@@ -114,35 +121,40 @@ class TournamentSimulator:
                     continue
                 t1, t2 = teams[i], teams[j]
                 
-                f1 = self._get_team_features_for_2026(t1)
-                f2 = self._get_team_features_for_2026(t2)
+                f1 = self.team_features[t1]
+                f2 = self.team_features[t2]
                 
-                # Construct features
-                elo_diff = f1['elo'] - f2['elo']
-                form_diff = f1['form'] - f2['form']
-                squad_diff = f1['squad_quality'] - f2['squad_quality']
-                
-                host_advantage_home = 1 if f1['host_advantage'] == 1 and f2['host_advantage'] == 0 else 0
-                host_advantage_away = 1 if f2['host_advantage'] == 1 and f1['host_advantage'] == 0 else 0
-                
-                row = {
-                    'elo_diff': elo_diff,
-                    'home_elo': f1['elo'],
-                    'away_elo': f2['elo'],
-                    'home_form': f1['form'],
-                    'away_form': f2['form'],
-                    'form_diff': form_diff,
-                    'home_squad_quality': f1['squad_quality'],
-                    'away_squad_quality': f2['squad_quality'],
-                    'squad_quality_diff': squad_diff,
-                    'home_interim_coach': f1['is_interim'],
-                    'away_interim_coach': f2['is_interim'],
-                    'home_advantage': f1['host_advantage'],
-                    'host_advantage_home': host_advantage_home,
-                    'host_advantage_away': host_advantage_away
-                }
-                rows.append(row)
-                keys.append((t1, t2))
+                for fatigue1 in range(6):
+                    for fatigue2 in range(6):
+                        # Apply fatigue Elo penalty (20 Elo points per unit of fatigue)
+                        elo1 = f1['elo'] - fatigue1 * 20.0
+                        elo2 = f2['elo'] - fatigue2 * 20.0
+                        
+                        elo_diff = elo1 - elo2
+                        form_diff = f1['form'] - f2['form']
+                        squad_diff = f1['squad_quality'] - f2['squad_quality']
+                        
+                        host_advantage_home = 1 if f1['host_advantage'] == 1 and f2['host_advantage'] == 0 else 0
+                        host_advantage_away = 1 if f2['host_advantage'] == 1 and f1['host_advantage'] == 0 else 0
+                        
+                        row = {
+                            'elo_diff': elo_diff,
+                            'home_elo': elo1,
+                            'away_elo': elo2,
+                            'home_form': f1['form'],
+                            'away_form': f2['form'],
+                            'form_diff': form_diff,
+                            'home_squad_quality': f1['squad_quality'],
+                            'away_squad_quality': f2['squad_quality'],
+                            'squad_quality_diff': squad_diff,
+                            'home_interim_coach': f1['is_interim'],
+                            'away_interim_coach': f2['is_interim'],
+                            'home_advantage': f1['host_advantage'],
+                            'host_advantage_home': host_advantage_home,
+                            'host_advantage_away': host_advantage_away
+                        }
+                        rows.append(row)
+                        keys.append((t1, t2, fatigue1, fatigue2))
                 
         df_batch = pd.DataFrame(rows)[self.feature_cols]
         base_preds = self.base_model.predict_proba(df_batch)
@@ -157,39 +169,39 @@ class TournamentSimulator:
         """
         Predicts match probabilities between team1 and team2, considering cumulative fatigue.
         """
-        # If fatigue is 0, read from pre-computed cache
-        if fatigue1 == 0 and fatigue2 == 0:
-            if (team1, team2) in self.matchup_cache:
-                return self.matchup_cache[(team1, team2)]
-                
-        # If there is fatigue, run prediction on the fly
-        f1 = self._get_team_features_for_2026(team1)
-        f2 = self._get_team_features_for_2026(team2)
+        f1 = min(int(fatigue1), 5)
+        f2 = min(int(fatigue2), 5)
         
-        # Apply fatigue Elo penalty (20 Elo points per unit of fatigue)
-        elo1 = f1['elo'] - fatigue1 * 20.0
-        elo2 = f2['elo'] - fatigue2 * 20.0
+        # Read from pre-computed cache
+        if (team1, team2, f1, f2) in self.matchup_cache:
+            return self.matchup_cache[(team1, team2, f1, f2)]
+            
+        # Fallback (should never be reached unless team name is not in the cached 48 teams)
+        f1_feat = self._get_team_features_for_2026(team1)
+        f2_feat = self._get_team_features_for_2026(team2)
         
+        elo1 = f1_feat['elo'] - f1 * 20.0
+        elo2 = f2_feat['elo'] - f2 * 20.0
         elo_diff = elo1 - elo2
-        form_diff = f1['form'] - f2['form']
-        squad_diff = f1['squad_quality'] - f2['squad_quality']
+        form_diff = f1_feat['form'] - f2_feat['form']
+        squad_diff = f1_feat['squad_quality'] - f2_feat['squad_quality']
         
-        host_advantage_home = 1 if f1['host_advantage'] == 1 and f2['host_advantage'] == 0 else 0
-        host_advantage_away = 1 if f2['host_advantage'] == 1 and f1['host_advantage'] == 0 else 0
+        host_advantage_home = 1 if f1_feat['host_advantage'] == 1 and f2_feat['host_advantage'] == 0 else 0
+        host_advantage_away = 1 if f2_feat['host_advantage'] == 1 and f1_feat['host_advantage'] == 0 else 0
         
         row = {
             'elo_diff': elo_diff,
             'home_elo': elo1,
             'away_elo': elo2,
-            'home_form': f1['form'],
-            'away_form': f2['form'],
+            'home_form': f1_feat['form'],
+            'away_form': f2_feat['form'],
             'form_diff': form_diff,
-            'home_squad_quality': f1['squad_quality'],
-            'away_squad_quality': f2['squad_quality'],
+            'home_squad_quality': f1_feat['squad_quality'],
+            'away_squad_quality': f2_feat['squad_quality'],
             'squad_quality_diff': squad_diff,
-            'home_interim_coach': f1['is_interim'],
-            'away_interim_coach': f2['is_interim'],
-            'home_advantage': f1['host_advantage'],
+            'home_interim_coach': f1_feat['is_interim'],
+            'away_interim_coach': f2_feat['is_interim'],
+            'home_advantage': f1_feat['host_advantage'],
             'host_advantage_home': host_advantage_home,
             'host_advantage_away': host_advantage_away
         }
@@ -205,25 +217,67 @@ class TournamentSimulator:
         """
         Simulates match goals based on match outcome probabilities.
         """
-        p = np.array([p_home, p_draw, p_away], dtype=np.float64)
-        p = p / p.sum()
-        outcome = np.random.choice([0, 1, 2], p=p)
+        total = p_home + p_draw + p_away
+        r = random.random() * total
         
-        if outcome == 1:  # Draw
-            goals = int(np.random.choice([0, 1, 2, 3], p=[0.30, 0.50, 0.16, 0.04]))
+        if r < p_home:  # Home Win
+            # gd choice: [1, 2, 3, 4] with p=[0.60, 0.25, 0.10, 0.05]
+            r_gd = random.random()
+            if r_gd < 0.60:
+                gd = 1
+            elif r_gd < 0.85:
+                gd = 2
+            elif r_gd < 0.95:
+                gd = 3
+            else:
+                gd = 4
+                
+            # loser_goals choice: [0, 1, 2] with p=[0.55, 0.35, 0.10]
+            r_lg = random.random()
+            if r_lg < 0.55:
+                loser_goals = 0
+            elif r_lg < 0.90:
+                loser_goals = 1
+            else:
+                loser_goals = 2
+                
+            return loser_goals + gd, loser_goals, 0
+            
+        elif r < p_home + p_draw:  # Draw
+            # goals choice: [0, 1, 2, 3] with p=[0.30, 0.50, 0.16, 0.04]
+            r_g = random.random()
+            if r_g < 0.30:
+                goals = 0
+            elif r_g < 0.80:
+                goals = 1
+            elif r_g < 0.96:
+                goals = 2
+            else:
+                goals = 3
             return goals, goals, 1
             
-        elif outcome == 0:  # Home Win
-            gd = int(np.random.choice([1, 2, 3, 4], p=[0.60, 0.25, 0.10, 0.05]))
-            loser_goals = int(np.random.choice([0, 1, 2], p=[0.55, 0.35, 0.10]))
-            winner_goals = loser_goals + gd
-            return winner_goals, loser_goals, 0
-            
         else:  # Away Win
-            gd = int(np.random.choice([1, 2, 3, 4], p=[0.60, 0.25, 0.10, 0.05]))
-            loser_goals = int(np.random.choice([0, 1, 2], p=[0.55, 0.35, 0.10]))
-            winner_goals = loser_goals + gd
-            return loser_goals, winner_goals, 2
+            # gd choice: [1, 2, 3, 4] with p=[0.60, 0.25, 0.10, 0.05]
+            r_gd = random.random()
+            if r_gd < 0.60:
+                gd = 1
+            elif r_gd < 0.85:
+                gd = 2
+            elif r_gd < 0.95:
+                gd = 3
+            else:
+                gd = 4
+                
+            # loser_goals choice: [0, 1, 2] with p=[0.55, 0.35, 0.10]
+            r_lg = random.random()
+            if r_lg < 0.55:
+                loser_goals = 0
+            elif r_lg < 0.90:
+                loser_goals = 1
+            else:
+                loser_goals = 2
+                
+            return loser_goals, loser_goals + gd, 2
 
     def simulate_group_stage(self):
         """Simulates the group stage and returns the qualified teams."""
@@ -236,7 +290,7 @@ class TournamentSimulator:
             for i in range(len(teams)):
                 for j in range(i + 1, len(teams)):
                     t1, t2 = teams[i], teams[j]
-                    probs = self.predict_match(t1, t2)
+                    probs = self.matchup_cache[(t1, t2, 0, 0)]
                     g1, g2, outcome = self.simulate_match_goals(probs[0], probs[1], probs[2])
                     
                     if outcome == 0:  # t1 wins
@@ -301,7 +355,9 @@ class TournamentSimulator:
 
     def simulate_knockout_match(self, team1, team2, fatigue1, fatigue2):
         """Simulates a knockout match to determine who advances and their updated fatigue."""
-        probs = self.predict_match(team1, team2, fatigue1, fatigue2)
+        f1_c = min(int(fatigue1), 5)
+        f2_c = min(int(fatigue2), 5)
+        probs = self.matchup_cache[(team1, team2, f1_c, f2_c)]
         p_home, p_draw, p_away = probs[0], probs[1], probs[2]
         
         # Regular time goals
@@ -326,10 +382,8 @@ class TournamentSimulator:
             
         # Penalty shootout
         # Shootout model
-        curated1 = self.lookup_system.lookup(team1, "2026-06-11")
-        curated2 = self.lookup_system.lookup(team2, "2026-06-11")
-        sq1 = curated1['squad_quality']
-        sq2 = curated2['squad_quality']
+        sq1 = self.team_features[team1]['squad_quality']
+        sq2 = self.team_features[team2]['squad_quality']
         elo1 = self.starting_elos.get(team1, 1500.0) - fatigue1 * 20.0
         elo2 = self.starting_elos.get(team2, 1500.0) - fatigue2 * 20.0
         

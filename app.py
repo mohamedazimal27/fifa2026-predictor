@@ -150,7 +150,7 @@ st.sidebar.markdown("<h3 style='color: #00f2fe; font-weight:700;'>Simulation Par
 num_simulations = st.sidebar.slider("Number of Simulations", min_value=100, max_value=10000, value=2000, step=100)
 seed = st.sidebar.number_input("Random Seed", value=42, step=1)
 
-run_button = st.sidebar.button("⚡ Run Tournament Simulation", use_container_width=True)
+run_button = st.sidebar.button("⚡ Run Tournament Simulation", width="stretch")
 
 if run_button or st.session_state.mc_results is None:
     # Set seed
@@ -424,7 +424,7 @@ with tab4:
         edited_interim = st.checkbox("Is Interim Coach", value=bool(coach_sc['is_interim']))
         st.markdown("</div>", unsafe_allow_html=True)
         
-    run_scen = st.button("🚀 Run Scenario Simulation (1,000 Runs)", use_container_width=True)
+    run_scen = st.button("🚀 Run Scenario Simulation (1,000 Runs)", width="stretch")
     
     if run_scen:
         # Save originals
@@ -522,28 +522,88 @@ with tab5:
             st.write("*Accuracy is computed by taking the argmax of outcome probabilities.*")
             st.markdown("</div>", unsafe_allow_html=True)
             
-    # Feature Importance Chart
-    st.markdown("<div class='glass-card'><h4>📊 Feature Importance (XGBoost)</h4>", unsafe_allow_html=True)
-    importances = sim.base_model.feature_importances_
-    feat_imp_df = pd.DataFrame({
-        'Feature': sim.feature_cols,
-        'Importance': importances
-    }).sort_values(by='Importance', ascending=True)
+    # Feature Importance & Calibration Curve in two columns
+    col_ta_1, col_ta_2 = st.columns(2)
     
-    fig_imp = px.bar(
-        feat_imp_df,
-        x='Importance',
-        y='Feature',
-        orientation='h',
-        color='Importance',
-        color_continuous_scale='plasma',
-        template='plotly_dark'
-    )
-    fig_imp.update_layout(
-        height=400,
-        margin=dict(l=20, r=20, t=10, b=10),
-        paper_bgcolor='rgba(0,0,0,0)',
-        plot_bgcolor='rgba(0,0,0,0)'
-    )
-    st.plotly_chart(fig_imp, use_container_width=True)
-    st.markdown("</div>", unsafe_allow_html=True)
+    with col_ta_1:
+        st.markdown("<div class='glass-card'><h4>📊 Feature Importance (XGBoost)</h4>", unsafe_allow_html=True)
+        importances = sim.base_model.feature_importances_
+        feat_imp_df = pd.DataFrame({
+            'Feature': sim.feature_cols,
+            'Importance': importances
+        }).sort_values(by='Importance', ascending=True)
+        
+        fig_imp = px.bar(
+            feat_imp_df,
+            x='Importance',
+            y='Feature',
+            orientation='h',
+            color='Importance',
+            color_continuous_scale='plasma',
+            template='plotly_dark'
+        )
+        fig_imp.update_layout(
+            height=400,
+            margin=dict(l=20, r=20, t=10, b=10),
+            paper_bgcolor='rgba(0,0,0,0)',
+            plot_bgcolor='rgba(0,0,0,0)'
+        )
+        st.plotly_chart(fig_imp, use_container_width=True)
+        st.markdown("</div>", unsafe_allow_html=True)
+        
+    with col_ta_2:
+        st.markdown("<div class='glass-card'><h4>📈 Probability Calibration (Reliability Diagram)</h4>", unsafe_allow_html=True)
+        if os.path.exists("models/calibration_curve.json"):
+            with open("models/calibration_curve.json", "r") as f:
+                cal_data = json.load(f)
+                
+            fig_cal = go.Figure()
+            
+            # Perfect calibration line
+            fig_cal.add_trace(go.Scatter(
+                x=[0, 1], y=[0, 1],
+                mode='lines',
+                name='Perfect Calibration',
+                line=dict(color='rgba(255,255,255,0.2)', dash='dash')
+            ))
+            
+            # Uncalibrated
+            fig_cal.add_trace(go.Scatter(
+                x=cal_data['uncalibrated']['mean_pred'],
+                y=cal_data['uncalibrated']['actual_freq'],
+                mode='lines+markers',
+                name='Uncalibrated (XGBoost)',
+                line=dict(color='#ef4444', width=2),
+                marker=dict(size=6)
+            ))
+            
+            # Calibrated
+            fig_cal.add_trace(go.Scatter(
+                x=cal_data['calibrated']['mean_pred'],
+                y=cal_data['calibrated']['actual_freq'],
+                mode='lines+markers',
+                name='Calibrated (Platt Scaling)',
+                line=dict(color='#00f2fe', width=3),
+                marker=dict(size=8)
+            ))
+            
+            fig_cal.update_layout(
+                xaxis_title='Mean Predicted Probability (Home Win)',
+                yaxis_title='Actual Observed Frequency',
+                template='plotly_dark',
+                height=400,
+                margin=dict(l=20, r=20, t=10, b=10),
+                paper_bgcolor='rgba(0,0,0,0)',
+                plot_bgcolor='rgba(0,0,0,0)',
+                legend=dict(
+                    yanchor="top",
+                    y=0.99,
+                    xanchor="left",
+                    x=0.01,
+                    bgcolor="rgba(0,0,0,0)"
+                )
+            )
+            st.plotly_chart(fig_cal, use_container_width=True)
+        else:
+            st.warning("Calibration curve data not found.")
+        st.markdown("</div>", unsafe_allow_html=True)

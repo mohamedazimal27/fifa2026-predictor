@@ -1,0 +1,37 @@
+{
+  "best_half_life": 365,
+  "all_results": [
+    {
+      "half_life_days": 30,
+      "log_loss": 0.8987755179405212
+    },
+    {
+      "half_life_days": 90,
+      "log_loss": 0.8966518640518188
+    },
+    {
+      "half_life_days": 180,
+      "log_loss": 0.8966206908226013
+    },
+    {
+      "half_life_days": 270,
+      "log_loss": 0.8964195847511292
+    },
+    {
+      "half_life_days": 365,
+      "log_loss": 0.896244466304779
+    },
+    {
+      "half_life_days": 540,
+      "log_loss": 0.89689040184021
+    },
+    {
+      "half_life_days": 730,
+      "log_loss": 0.8965930342674255
+    },
+    {
+      "half_life_days": 1095,
+      "log_loss": 0.896487832069397
+    }
+  ]
+}

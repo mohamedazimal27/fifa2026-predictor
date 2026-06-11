@@ -1,0 +1,200 @@
+{
+  "Argentina": {
+    "coaches": [
+      {"name": "Marcelo Bielsa", "start": "1998-10-20", "end": "2004-09-15"},
+      {"name": "José Pékerman", "start": "2004-09-15", "end": "2006-07-02"},
+      {"name": "Alfio Basile", "start": "2006-07-02", "end": "2008-10-16"},
+      {"name": "Diego Maradona", "start": "2008-11-04", "end": "2010-07-27"},
+      {"name": "Sergio Batista", "start": "2010-07-27", "end": "2011-07-25"},
+      {"name": "Alejandro Sabella", "start": "2011-08-05", "end": "2014-07-30"},
+      {"name": "Gerardo Martino", "start": "2014-08-12", "end": "2016-07-05"},
+      {"name": "Edgardo Bauza", "start": "2016-08-01", "end": "2017-04-11"},
+      {"name": "Jorge Sampaoli", "start": "2017-06-01", "end": "2018-07-15"},
+      {"name": "Lionel Scaloni", "start": "2018-08-03", "end": "2026-07-31"}
+    ],
+    "squad_quality": [
+      {"start": "2000-01-01", "end": "2005-12-31", "score": 1.20},
+      {"start": "2006-01-01", "end": "2010-12-31", "score": 1.25},
+      {"start": "2011-01-01", "end": "2014-12-31", "score": 1.22},
+      {"start": "2015-01-01", "end": "2018-12-31", "score": 1.20},
+      {"start": "2019-01-01", "end": "2022-12-31", "score": 1.28},
+      {"start": "2023-01-01", "end": "2026-07-31", "score": 1.30}
+    ]
+  },
+  "Brazil": {
+    "coaches": [
+      {"name": "Luiz Felipe Scolari", "start": "2001-06-12", "end": "2002-08-21"},
+      {"name": "Carlos Alberto Parreira", "start": "2003-01-08", "end": "2006-07-19"},
+      {"name": "Dunga", "start": "2006-07-24", "end": "2010-07-02"},
+      {"name": "Mano Menezes", "start": "2010-07-24", "end": "2012-11-23"},
+      {"name": "Luiz Felipe Scolari", "start": "2012-11-28", "end": "2014-07-14"},
+      {"name": "Dunga", "start": "2014-07-22", "end": "2016-06-14"},
+      {"name": "Tite", "start": "2016-06-20", "end": "2022-12-09"},
+      {"name": "Ramon Menezes", "start": "2023-02-15", "end": "2023-07-04"},
+      {"name": "Fernando Diniz", "start": "2023-07-04", "end": "2024-01-05"},
+      {"name": "Dorival Júnior", "start": "2024-01-10", "end": "2026-07-31"}
+    ],
+    "squad_quality": [
+      {"start": "2000-01-01", "end": "2006-12-31", "score": 1.30},
+      {"start": "2007-01-01", "end": "2010-12-31", "score": 1.22},
+      {"start": "2011-01-01", "end": "2014-12-31", "score": 1.20},
+      {"start": "2015-01-01", "end": "2018-12-31", "score": 1.23},
+      {"start": "2019-01-01", "end": "2022-12-31", "score": 1.26},
+      {"start": "2023-01-01", "end": "2026-07-31", "score": 1.25}
+    ]
+  },
+  "Germany": {
+    "coaches": [
+      {"name": "Rudi Völler", "start": "2000-07-02", "end": "2004-06-24"},
+      {"name": "Jürgen Klinsmann", "start": "2004-07-26", "end": "2006-07-11"},
+      {"name": "Joachim Löw", "start": "2006-07-12", "end": "2021-06-29"},
+      {"name": "Hansi Flick", "start": "2021-08-01", "end": "2023-09-10"},
+      {"name": "Julian Nagelsmann", "start": "2023-09-22", "end": "2026-07-31"}
+    ],
+    "squad_quality": [
+      {"start": "2000-01-01", "end": "2005-12-31", "score": 1.15},
+      {"start": "2006-01-01", "end": "2010-12-31", "score": 1.22},
+      {"start": "2011-01-01", "end": "2016-12-31", "score": 1.28},
+      {"start": "2017-01-01", "end": "2020-12-31", "score": 1.15},
+      {"start": "2021-01-01", "end": "2022-12-31", "score": 1.18},
+      {"start": "2023-01-01", "end": "2026-07-31", "score": 1.20}
+    ]
+  },
+  "France": {
+    "coaches": [
+      {"name": "Roger Lemerre", "start": "1998-07-27", "end": "2002-07-05"},
+      {"name": "Jacques Santini", "start": "2002-08-21", "end": "2004-07-04"},
+      {"name": "Raymond Domenech", "start": "2004-07-12", "end": "2010-06-22"},
+      {"name": "Laurent Blanc", "start": "2010-07-02", "end": "2012-06-30"},
+      {"name": "Didier Deschamps", "start": "2012-07-08", "end": "2026-07-31"}
+    ],
+    "squad_quality": [
+      {"start": "2000-01-01", "end": "2004-12-31", "score": 1.28},
+      {"start": "2005-01-01", "end": "2010-12-31", "score": 1.20},
+      {"start": "2011-01-01", "end": "2015-12-31", "score": 1.18},
+      {"start": "2016-01-01", "end": "2022-12-31", "score": 1.32},
+      {"start": "2023-01-01", "end": "2026-07-31", "score": 1.30}
+    ]
+  },
+  "Spain": {
+    "coaches": [
+      {"name": "José Antonio Camacho", "start": "1998-09-15", "end": "2002-07-02"},
+      {"name": "Iñaki Sáez", "start": "2002-07-02", "end": "2004-06-25"},
+      {"name": "Luis Aragonés", "start": "2004-07-01", "end": "2008-06-29"},
+      {"name": "Vicente del Bosque", "start": "2008-07-01", "end": "2016-06-30"},
+      {"name": "Julen Lopetegui", "start": "2016-07-21", "end": "2018-06-13"},
+      {"name": "Fernando Hierro", "start": "2018-06-13", "end": "2018-07-08"},
+      {"name": "Luis Enrique", "start": "2018-07-09", "end": "2019-06-19"},
+      {"name": "Robert Moreno", "start": "2019-06-19", "end": "2019-11-19"},
+      {"name": "Luis Enrique", "start": "2019-11-19", "end": "2022-12-08"},
+      {"name": "Luis de la Fuente", "start": "2022-12-08", "end": "2026-07-31"}
+    ],
+    "squad_quality": [
+      {"start": "2000-01-01", "end": "2007-12-31", "score": 1.20},
+      {"start": "2008-01-01", "end": "2013-12-31", "score": 1.35},
+      {"start": "2014-01-01", "end": "2018-12-31", "score": 1.20},
+      {"start": "2019-01-01", "end": "2022-12-31", "score": 1.22},
+      {"start": "2023-01-01", "end": "2026-07-31", "score": 1.28}
+    ]
+  },
+  "England": {
+    "coaches": [
+      {"name": "Kevin Keegan", "start": "1999-02-18", "end": "2000-10-07"},
+      {"name": "Sven-Göran Eriksson", "start": "2001-01-12", "end": "2006-07-31"},
+      {"name": "Steve McClaren", "start": "2006-08-01", "end": "2007-11-22"},
+      {"name": "Fabio Capello", "start": "2007-12-14", "end": "2012-02-08"},
+      {"name": "Stuart Pearce", "start": "2012-02-08", "end": "2012-05-01"},
+      {"name": "Roy Hodgson", "start": "2012-05-01", "end": "2016-06-27"},
+      {"name": "Sam Allardyce", "start": "2016-07-22", "end": "2016-09-27"},
+      {"name": "Gareth Southgate", "start": "2016-09-27", "end": "2024-07-16"},
+      {"name": "Lee Carsley", "start": "2024-08-09", "end": "2024-11-17"},
+      {"name": "Thomas Tuchel", "start": "2025-01-01", "end": "2026-07-31"}
+    ],
+    "squad_quality": [
+      {"start": "2000-01-01", "end": "2007-12-31", "score": 1.18},
+      {"start": "2008-01-01", "end": "2015-12-31", "score": 1.15},
+      {"start": "2016-01-01", "end": "2020-12-31", "score": 1.22},
+      {"start": "2021-01-01", "end": "2024-12-31", "score": 1.28},
+      {"start": "2025-01-01", "end": "2026-07-31", "score": 1.28}
+    ]
+  },
+  "Italy": {
+    "coaches": [
+      {"name": "Giovanni Trapattoni", "start": "2000-07-06", "end": "2004-06-25"},
+      {"name": "Marcello Lippi", "start": "2004-07-16", "end": "2006-07-12"},
+      {"name": "Roberto Donadoni", "start": "2006-07-13", "end": "2008-06-26"},
+      {"name": "Marcello Lippi", "start": "2008-06-26", "end": "2010-06-25"},
+      {"name": "Cesare Prandelli", "start": "2010-07-01", "end": "2014-06-24"},
+      {"name": "Antonio Conte", "start": "2014-08-14", "end": "2016-07-02"},
+      {"name": "Gian Piero Ventura", "start": "2016-07-18", "end": "2017-11-15"},
+      {"name": "Roberto Mancini", "start": "2018-05-14", "end": "2023-08-13"},
+      {"name": "Luciano Spalletti", "start": "2023-09-01", "end": "2026-07-31"}
+    ],
+    "squad_quality": [
+      {"start": "2000-01-01", "end": "2006-12-31", "score": 1.25},
+      {"start": "2007-01-01", "end": "2014-12-31", "score": 1.18},
+      {"start": "2015-01-01", "end": "2018-12-31", "score": 1.10},
+      {"start": "2019-01-01", "end": "2021-12-31", "score": 1.20},
+      {"start": "2022-01-01", "end": "2026-07-31", "score": 1.15}
+    ]
+  },
+  "Belgium": {
+    "coaches": [
+      {"name": "Aimé Anthuenis", "start": "2002-07-01", "end": "2005-12-31"},
+      {"name": "René Vandereycken", "start": "2006-01-01", "end": "2009-04-07"},
+      {"name": "Franky Vercauteren", "start": "2009-04-09", "end": "2009-09-10"},
+      {"name": "Dick Advocaat", "start": "2009-10-01", "end": "2010-04-15"},
+      {"name": "Georges Leekens", "start": "2010-05-03", "end": "2012-05-13"},
+      {"name": "Marc Wilmots", "start": "2012-05-15", "end": "2016-07-15"},
+      {"name": "Roberto Martínez", "start": "2016-08-03", "end": "2022-12-01"},
+      {"name": "Domenico Tedesco", "start": "2023-02-08", "end": "2026-07-31"}
+    ],
+    "squad_quality": [
+      {"start": "2000-01-01", "end": "2011-12-31", "score": 1.00},
+      {"start": "2012-01-01", "end": "2015-12-31", "score": 1.18},
+      {"start": "2016-01-01", "end": "2021-12-31", "score": 1.25},
+      {"start": "2022-01-01", "end": "2026-07-31", "score": 1.15}
+    ]
+  },
+  "Portugal": {
+    "coaches": [
+      {"name": "António Oliveira", "start": "2000-07-01", "end": "2002-06-30"},
+      {"name": "Agostinho Oliveira", "start": "2002-07-01", "end": "2003-01-31"},
+      {"name": "Luiz Felipe Scolari", "start": "2003-01-31", "end": "2008-06-30"},
+      {"name": "Carlos Queiroz", "start": "2008-07-11", "end": "2010-09-09"},
+      {"name": "Paulo Bento", "start": "2010-09-20", "end": "2014-09-11"},
+      {"name": "Fernando Santos", "start": "2014-09-24", "end": "2022-12-15"},
+      {"name": "Roberto Martínez", "start": "2023-01-09", "end": "2026-07-31"}
+    ],
+    "squad_quality": [
+      {"start": "2000-01-01", "end": "2006-12-31", "score": 1.18},
+      {"start": "2007-01-01", "end": "2014-12-31", "score": 1.15},
+      {"start": "2015-01-01", "end": "2020-12-31", "score": 1.22},
+      {"start": "2021-01-01", "end": "2026-07-31", "score": 1.26}
+    ]
+  },
+  "Netherlands": {
+    "coaches": [
+      {"name": "Louis van Gaal", "start": "2000-07-07", "end": "2001-11-30"},
+      {"name": "Dick Advocaat", "start": "2002-01-25", "end": "2004-07-06"},
+      {"name": "Marco van Basten", "start": "2004-07-29", "end": "2008-07-01"},
+      {"name": "Bert van Marwijk", "start": "2008-07-01", "end": "2012-06-27"},
+      {"name": "Louis van Gaal", "start": "2012-07-06", "end": "2014-07-13"},
+      {"name": "Guus Hiddink", "start": "2014-08-01", "end": "2015-06-29"},
+      {"name": "Danny Blind", "start": "2015-07-01", "end": "2017-03-26"},
+      {"name": "Fred Grim", "start": "2017-03-26", "end": "2017-06-04"},
+      {"name": "Dick Advocaat", "start": "2017-06-09", "end": "2017-11-14"},
+      {"name": "Ronald Koeman", "start": "2018-02-06", "end": "2020-08-18"},
+      {"name": "Dwight Lodeweges", "start": "2020-08-19", "end": "2020-09-23"},
+      {"name": "Frank de Boer", "start": "2020-09-23", "end": "2021-06-29"},
+      {"name": "Louis van Gaal", "start": "2021-08-04", "end": "2022-12-22"},
+      {"name": "Ronald Koeman", "start": "2023-01-01", "end": "2026-07-31"}
+    ],
+    "squad_quality": [
+      {"start": "2000-01-01", "end": "2007-12-31", "score": 1.20},
+      {"start": "2008-01-01", "end": "2014-12-31", "score": 1.25},
+      {"start": "2015-01-01", "end": "2019-12-31", "score": 1.10},
+      {"start": "2020-01-01", "end": "2026-07-31", "score": 1.20}
+    ]
+  }
+}

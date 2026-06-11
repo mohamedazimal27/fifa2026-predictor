@@ -4,6 +4,9 @@ __pycache__/
 .ipynb_checkpoints/
 .DS_Store
 .pytest_cache/
+.hypothesis/
 data/merged_results.csv
 /models/
 .agent/
+final_implementaion.md
+prd.md

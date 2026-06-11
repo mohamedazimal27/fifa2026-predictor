@@ -115,7 +115,7 @@ Clone the repository and prepare a virtual environment:
 ```bash
 # Clone the repository
 git clone https://github.com/mohamedazimal27/fifa2026-predictor.git
-cd fifa2026_predictor
+cd fifa2026-predictor
 
 # Set up virtual environment
 python3 -m venv venv
@@ -125,7 +125,18 @@ source venv/bin/activate
 pip install -r requirements.txt
 ```
 
-### 2. Running the Streamlit App
+### 2. Build Local Model Artifacts
+
+Model artifacts are generated locally and intentionally excluded from the public repository. Train the model before launching the dashboard:
+
+```bash
+PYTHONPATH="." venv/bin/python -m src.models.train
+PYTHONPATH="." venv/bin/python -m src.models.evaluate_backtests
+```
+
+This creates the local `models/` directory used by the Streamlit app.
+
+### 3. Running the Streamlit App
 
 Run the Streamlit server. It is recommended to clear `PYTHONPATH` to prevent conflicts with other system packages:
 
@@ -135,7 +146,7 @@ PYTHONPATH="" venv/bin/streamlit run app.py
 
 Open your browser and navigate to `http://localhost:8501`.
 
-### 3. Running Unit Tests
+### 4. Running Unit Tests
 
 The codebase includes full test coverage for the features, models, simulators, and routing logic:
 
@@ -151,18 +162,24 @@ PYTHONPATH="." venv/bin/pytest
 ├── app.py                     # Streamlit dashboard entry point
 ├── requirements.txt           # Project dependencies
 ├── src/
-│   ├── data_loader.py         # Loader for matches, daily Elos, and coach stats
 │   ├── features.py            # Feature engineering and decay computations
-│   ├── models.py              # Model calibration and output prediction
-│   └── simulator.py           # World Cup tournament and shootout simulator
+│   ├── simulator.py           # World Cup tournament and shootout simulator
+│   ├── third_place_router.py  # Best third-place assignment logic
+│   ├── data_pipeline/
+│   │   ├── data_loader.py     # Loader for matches and daily Elos
+│   │   ├── curated_lookup.py  # Temporal team metadata lookup
+│   │   └── download_elo.py    # Elo data download helper
+│   ├── models/
+│   │   ├── train.py           # Model training, calibration, and metrics export
+│   │   └── evaluate_backtests.py
+│   └── tuning/
+│       └── decay_search.py    # Form-decay tuning utility
 ├── data/
 │   ├── results.csv            # Historic match results (2000-2024)
 │   ├── shootouts.csv          # Penalty shootout logs
 │   ├── elo/                   # Daily Elo ratings for 150+ nations
 │   ├── curated_teams.json     # Temporal squad quality & coach timelines
-│   └── groups.json            # Official 2026 groups configuration
-├── models/
-│   ├── fifa_model.pkl         # Pre-trained calibrated model artifact
-│   └── benchmark_metrics.json # Evaluation log loss and accuracy metrics
+│   └── canonical_teams.json   # Team name/code/file mapping
+├── models/                    # Local generated artifacts, ignored by Git
 └── tests/                     # pytest suite
 ```

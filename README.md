@@ -2,7 +2,10 @@
 
 A machine learning and Monte Carlo simulation engine designed to model and simulate the expanded **48-team FIFA 2026 World Cup** in North America. Built using **XGBoost** for match outcome probability estimation and **Platt Scaling** for probability calibration, this application provides a statistical framework for tournament modeling and includes an interactive **Streamlit** dashboard.
 
+![Dashboard Overview](assets/dashboard_overview.png)
+
 ---
+
 
 
 ## 📊 Model Performance Metrics
@@ -103,6 +106,14 @@ The dashboard consists of six interactive tabs:
 4.  **🎮 Scenario Simulator**: A sandbox tab allowing users to modify a team's Elo, squad quality, or coach status in memory to see how it affects simulation outcomes with Before vs. After confidence interval comparisons.
 5.  **⏪ Historical Replay**: Replays the 2018 and 2022 World Cups, comparing the model's calibrated predictions side-by-side with actual results and displaying overall log loss and accuracy metrics.
 6.  **⚙️ Model Transparency**: Displays Platt Scaling calibration curves (Reliability Diagrams), validation log loss metrics, feature importance, and KS-test feature drift analyses.
+
+### 📸 Dashboard Screenshots
+
+| 🏆 Tournament Forecast | 📊 Probability Calibration & Diagnostics |
+| :---: | :---: |
+| ![Tournament Overview](assets/dashboard_overview.png) | ![Calibration Curve](assets/calibration_diagnostics.png) |
+| **🎮 Scenario Simulator (Before/After CIs)** | **⏪ Historical Tournament Replay** |
+| ![Scenario Simulator](assets/scenario_simulator.png) | ![Historical Replay](assets/historical_replay.png) |
 
 ---
 

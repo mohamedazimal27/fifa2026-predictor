@@ -2,11 +2,15 @@ import os
 import pickle
 import json
 import random
+import collections
+import math
+import functools
 import numpy as np
 import pandas as pd
 from src.data_pipeline.curated_lookup import CuratedLookup
 from src.data_pipeline.data_loader import parse_elo_tsv
 from src.third_place_router import assign_third_places
+from src.features import get_squad_features, CONTINENTAL_TOURNAMENTS
 
 # 2026 World Cup Groups and Teams
 GROUPS_2026 = {
@@ -24,10 +28,69 @@ GROUPS_2026 = {
     'L': ['Belgium', 'Turkey', 'Ivory_Coast', 'New_Zealand']
 }
 
+def compare_teams(a, b, group_matches):
+    """
+    FIFA World Cup tiebreaker sorting:
+    1. Points
+    2. Goal Difference (GD)
+    3. Goals Scored (GS)
+    4. Head-to-Head Points
+    5. Head-to-Head GD
+    6. Head-to-Head GS
+    7. Seeded Draw / Elo fallback
+    """
+    t1 = a['team']
+    t2 = b['team']
+    
+    # 1. Points
+    if a['points'] != b['points']:
+        return a['points'] - b['points']
+        
+    # 2. GD
+    if a['gd'] != b['gd']:
+        return a['gd'] - b['gd']
+        
+    # 3. GS
+    if a['gs'] != b['gs']:
+        return a['gs'] - b['gs']
+        
+    # 4. H2H match check
+    h2h_match = None
+    for h, aw, h_g, a_g in group_matches:
+        if (h == t1 and aw == t2):
+            h2h_match = (h_g, a_g)
+            break
+        elif (h == t2 and aw == t1):
+            h2h_match = (a_g, h_g)
+            break
+            
+    if h2h_match is not None:
+        g1, g2 = h2h_match
+        # H2H Points
+        p1 = 3 if g1 > g2 else (1 if g1 == g2 else 0)
+        p2 = 3 if g2 > g1 else (1 if g1 == g2 else 0)
+        if p1 != p2:
+            return p1 - p2
+        # H2H GD
+        gd1 = g1 - g2
+        gd2 = g2 - g1
+        if gd1 != gd2:
+            return gd1 - gd2
+        # H2H GS
+        if g1 != g2:
+            return g1 - g2
+            
+    # 5. Elo rating fallback
+    if a['elo'] != b['elo']:
+        return a['elo'] - b['elo']
+        
+    return 0
+
 class TournamentSimulator:
-    def __init__(self, model_path="models/fifa_model.pkl", curated_path="data/curated_teams.json", elo_dir="data/elo", canonical_path="data/canonical_teams.json"):
+    def __init__(self, model_path="models/fifa_model.pkl", curated_path="data/curated_teams.json", elo_dir="data/elo", canonical_path="data/canonical_teams.json", results_path="data/results.csv", squads_path="data/squads.csv"):
         self.curated_path = curated_path
         self.elo_dir = elo_dir
+        self.squads_path = squads_path
         
         # Load pre-trained model
         with open(model_path, 'rb') as f:
@@ -43,17 +106,26 @@ class TournamentSimulator:
         with open(canonical_path, 'r', encoding='utf-8') as f:
             self.canonical_mapping = json.load(f)
             
+        # Load raw datasets for dynamic feature precomputation
+        results_df = pd.read_csv(results_path)
+        results_df['date'] = pd.to_datetime(results_df['date'])
+        
+        try:
+            squads_df = pd.read_csv(squads_path)
+        except Exception:
+            squads_df = None
+            
         # Get starting Elo ratings for all 2026 teams
         self.starting_elos = {}
         for group, teams in GROUPS_2026.items():
             for team in teams:
                 self.starting_elos[team] = self._get_latest_elo(team)
                 
-        # Pre-cache team features to avoid looking them up repeatedly
+        # Precompute team features using exact historical formulas up to June 11, 2026
         self.team_features = {}
         for group, teams in GROUPS_2026.items():
             for team in teams:
-                self.team_features[team] = self._get_team_features_for_2026(team)
+                self.team_features[team] = self._precompute_team_features(team, results_df, squads_df)
                 
         # Pre-compute match probabilities cache for all 48 teams
         self.matchup_cache = {}
@@ -70,7 +142,6 @@ class TournamentSimulator:
         df_elo = parse_elo_tsv(tsv_path)
         if df_elo.empty:
             return 1500.0
-        # Get the last row
         last_row = df_elo.iloc[-1]
         ta = last_row['team_a_code']
         tb = last_row['team_b_code']
@@ -82,28 +153,132 @@ class TournamentSimulator:
             return float(pb)
         return 1500.0
 
-    def _get_team_features_for_2026(self, team, date_str="2026-06-11"):
-        # ELO
-        elo = self.starting_elos.get(team, 1500.0)
+    def _precompute_team_features(self, team, results_df, squads_df, date_str="2026-06-11"):
+        date_cutoff = pd.to_datetime(date_str)
         
-        # Form: 2026 World Cup has starting forms. Let's default to 0.0
-        # since it's the start of the tournament.
-        form = 0.0
+        # 1. World Cup Experience Index
+        wc_matches = results_df[
+            ((results_df['home_team'] == team) | (results_df['away_team'] == team)) &
+            (results_df['tournament'] == 'FIFA World Cup') &
+            (results_df['date'] < date_cutoff)
+        ]
+        wc_years = wc_matches['date'].dt.year.unique()
+        wc_counts = {}
+        for y in wc_years:
+            wc_counts[y] = len(wc_matches[wc_matches['date'].dt.year == y])
+            
+        total_wc = len(wc_counts)
+        recent_wc = sum(1 for y in wc_counts if y in [2014, 2018, 2022])
+        total_ko = sum(1 for y, c in wc_counts.items() if c >= 4)
+        total_qf = sum(1 for y, c in wc_counts.items() if c >= 5)
+        total_sf = sum(1 for y, c in wc_counts.items() if c >= 6)
+        experience = (1.0 * total_wc) + (2.0 * recent_wc) + (2.0 * total_ko) + (3.0 * total_qf) + (4.0 * total_sf)
         
-        # Curated features (squad quality, is_interim)
+        # 2. Squad Features
+        sq_feats = get_squad_features(team, 2026, squads_df)
+        
+        # 3. Momentum Score
+        # A. Elo Trend over last 365 days
+        current_elo = self.starting_elos.get(team, 1500.0)
+        elo_365 = current_elo
+        if team in self.canonical_mapping:
+            code = self.canonical_mapping[team]['code']
+            elo_file = self.canonical_mapping[team]['elo_file']
+            tsv_path = os.path.join(self.elo_dir, elo_file)
+            if os.path.exists(tsv_path):
+                df_elo = parse_elo_tsv(tsv_path)
+                if not df_elo.empty:
+                    df_elo['date'] = pd.to_datetime(df_elo['date'])
+                    target_date = date_cutoff - pd.Timedelta(days=365)
+                    past_rows = df_elo[df_elo['date'] <= target_date]
+                    if not past_rows.empty:
+                        last_row = past_rows.iloc[-1]
+                        ta = last_row['team_a_code']
+                        tb = last_row['team_b_code']
+                        pa = last_row['team_a_elo_after']
+                        pb = last_row['team_b_elo_after']
+                        if ta == code:
+                            elo_365 = float(pa)
+                        elif tb == code:
+                            elo_365 = float(pb)
+        elo_trend = current_elo - elo_365
+        elo_trend_norm = np.clip((elo_trend + 200.0) / 400.0, 0.0, 1.0)
+        
+        # B. Recent Form (last 20 matches win rate before cutoff)
+        team_matches = results_df[
+            ((results_df['home_team'] == team) | (results_df['away_team'] == team)) &
+            (results_df['date'] < date_cutoff)
+        ].sort_values(by='date')
+        
+        outcomes = []
+        for _, row in team_matches.tail(20).iterrows():
+            hs = row['home_score']
+            as_ = row['away_score']
+            is_home = (row['home_team'] == team)
+            if hs == as_:
+                outcomes.append(0.5)
+            elif (hs > as_ and is_home) or (as_ > hs and not is_home):
+                outcomes.append(1.0)
+            else:
+                outcomes.append(0.0)
+        form_20 = sum(outcomes) / len(outcomes) if outcomes else 0.5
+        
+        # C. Continental Tournament performance in last 4 years
+        four_years_ago = date_cutoff - pd.Timedelta(days=1460)
+        cont_matches = results_df[
+            ((results_df['home_team'] == team) | (results_df['away_team'] == team)) &
+            (results_df['tournament'].isin(CONTINENTAL_TOURNAMENTS)) &
+            (results_df['date'] >= four_years_ago) &
+            (results_df['date'] < date_cutoff)
+        ]
+        cont_perf = 0.0
+        if not cont_matches.empty:
+            campaigns = collections.defaultdict(int)
+            for _, row in cont_matches.iterrows():
+                campaigns[(row['tournament'], row['date'].year)] += 1
+            max_matches = max(campaigns.values())
+            if max_matches >= 6:
+                cont_perf = 1.0
+            elif max_matches == 5:
+                cont_perf = 0.8
+            elif max_matches == 4:
+                cont_perf = 0.5
+            else:
+                cont_perf = 0.2
+                
+        # D. Unbeaten streak
+        unbeaten = 0
+        for _, row in team_matches.iloc[::-1].iterrows():
+            hs = row['home_score']
+            as_ = row['away_score']
+            is_home = (row['home_team'] == team)
+            if hs == as_:
+                unbeaten += 1
+            elif (hs > as_ and is_home) or (as_ > hs and not is_home):
+                unbeaten += 1
+            else:
+                break
+        unbeaten_norm = min(unbeaten / 15.0, 1.0)
+        
+        momentum = 0.4 * elo_trend_norm + 0.3 * form_20 + 0.2 * cont_perf + 0.1 * unbeaten_norm
+        
+        # Curated features (coach/squad quality)
         curated = self.lookup_system.lookup(team, date_str)
-        squad_quality = curated['squad_quality']
-        is_interim = 1 if curated['is_interim'] else 0
-        
-        # Host Advantage: 1 if USA, Mexico, Canada
-        host_adv = 1 if team in ['United_States', 'Mexico', 'Canada'] else 0
         
         return {
-            'elo': elo,
-            'form': form,
-            'squad_quality': squad_quality,
-            'is_interim': is_interim,
-            'host_advantage': host_adv
+            'elo': current_elo,
+            'form': form_20,
+            'squad_quality': curated['squad_quality'],
+            'is_interim': 1 if curated['is_interim'] else 0,
+            'host_advantage': 1 if team in ['United_States', 'Mexico', 'Canada'] else 0,
+            
+            # New features
+            'cohesion': sq_feats['club_cohesion'],
+            'peak_age_ratio': sq_feats['peak_age_ratio'],
+            'veteran_ratio': sq_feats['veteran_ratio'],
+            'youth_ratio': sq_feats['youth_ratio'],
+            'tournament_experience': experience,
+            'momentum': momentum
         }
 
     def _precompute_matchups(self):
@@ -111,7 +286,6 @@ class TournamentSimulator:
         teams = list(self.starting_elos.keys())
         n_teams = len(teams)
         
-        # We'll build a batch of all possible matchups to predict in one go
         rows = []
         keys = []
         
@@ -126,7 +300,6 @@ class TournamentSimulator:
                 
                 for fatigue1 in range(6):
                     for fatigue2 in range(6):
-                        # Apply fatigue Elo penalty (20 Elo points per unit of fatigue)
                         elo1 = f1['elo'] - fatigue1 * 20.0
                         elo2 = f2['elo'] - fatigue2 * 20.0
                         
@@ -151,7 +324,32 @@ class TournamentSimulator:
                             'away_interim_coach': f2['is_interim'],
                             'home_advantage': f1['host_advantage'],
                             'host_advantage_home': host_advantage_home,
-                            'host_advantage_away': host_advantage_away
+                            'host_advantage_away': host_advantage_away,
+                            
+                            # New features
+                            'home_cohesion': f1['cohesion'],
+                            'away_cohesion': f2['cohesion'],
+                            'cohesion_diff': f1['cohesion'] - f2['cohesion'],
+                            
+                            'home_peak_age_ratio': f1['peak_age_ratio'],
+                            'away_peak_age_ratio': f2['peak_age_ratio'],
+                            'peak_age_ratio_diff': f1['peak_age_ratio'] - f2['peak_age_ratio'],
+                            
+                            'home_veteran_ratio': f1['veteran_ratio'],
+                            'away_veteran_ratio': f2['veteran_ratio'],
+                            'veteran_ratio_diff': f1['veteran_ratio'] - f2['veteran_ratio'],
+                            
+                            'home_youth_ratio': f1['youth_ratio'],
+                            'away_youth_ratio': f2['youth_ratio'],
+                            'youth_ratio_diff': f1['youth_ratio'] - f2['youth_ratio'],
+                            
+                            'home_tournament_experience': f1['tournament_experience'],
+                            'away_tournament_experience': f2['tournament_experience'],
+                            'tournament_experience_diff': f1['tournament_experience'] - f2['tournament_experience'],
+                            
+                            'home_momentum': f1['momentum'],
+                            'away_momentum': f2['momentum'],
+                            'momentum_diff': f1['momentum'] - f2['momentum']
                         }
                         rows.append(row)
                         keys.append((t1, t2, fatigue1, fatigue2))
@@ -165,6 +363,48 @@ class TournamentSimulator:
             pred = pred / pred.sum()
             self.matchup_cache[key] = pred
 
+    def apply_injury_shocks(self, shocks):
+        """
+        Applies injury shocks to starting Elos and squad qualities, then rebuilds matchups.
+        shocks: dict of {team: importance_tier} where importance_tier is 'key', 'world_class', or 'indispensable'
+        """
+        # Re-initialize to fetch starting values
+        results_df = pd.read_csv("data/results.csv")
+        results_df['date'] = pd.to_datetime(results_df['date'])
+        try:
+            squads_df = pd.read_csv(self.squads_path)
+        except Exception:
+            squads_df = None
+            
+        for team in self.starting_elos.keys():
+            self.starting_elos[team] = self._get_latest_elo(team)
+            self.team_features[team] = self._precompute_team_features(team, results_df, squads_df)
+            
+        if not shocks:
+            self._precompute_matchups()
+            return
+            
+        for team, tier in shocks.items():
+            if team not in self.starting_elos:
+                continue
+            if tier == 'key':
+                elo_drop = 30.0
+                sq_drop = 0.05
+            elif tier == 'world_class':
+                elo_drop = 50.0
+                sq_drop = 0.10
+            elif tier == 'indispensable':
+                elo_drop = 80.0
+                sq_drop = 0.15
+            else:
+                continue
+                
+            self.starting_elos[team] -= elo_drop
+            self.team_features[team]['elo'] -= elo_drop
+            self.team_features[team]['squad_quality'] = max(0.0, self.team_features[team]['squad_quality'] - sq_drop)
+            
+        self._precompute_matchups()
+
     def predict_match(self, team1, team2, fatigue1=0, fatigue2=0):
         """
         Predicts match probabilities between team1 and team2, considering cumulative fatigue.
@@ -172,13 +412,12 @@ class TournamentSimulator:
         f1 = min(int(fatigue1), 5)
         f2 = min(int(fatigue2), 5)
         
-        # Read from pre-computed cache
         if (team1, team2, f1, f2) in self.matchup_cache:
             return self.matchup_cache[(team1, team2, f1, f2)]
             
-        # Fallback (should never be reached unless team name is not in the cached 48 teams)
-        f1_feat = self._get_team_features_for_2026(team1)
-        f2_feat = self._get_team_features_for_2026(team2)
+        # Fallback for teams not in cache
+        f1_feat = self.team_features.get(team1, self._precompute_team_features(team1, pd.read_csv("data/results.csv"), None))
+        f2_feat = self.team_features.get(team2, self._precompute_team_features(team2, pd.read_csv("data/results.csv"), None))
         
         elo1 = f1_feat['elo'] - f1 * 20.0
         elo2 = f2_feat['elo'] - f2 * 20.0
@@ -203,7 +442,27 @@ class TournamentSimulator:
             'away_interim_coach': f2_feat['is_interim'],
             'home_advantage': f1_feat['host_advantage'],
             'host_advantage_home': host_advantage_home,
-            'host_advantage_away': host_advantage_away
+            'host_advantage_away': host_advantage_away,
+            
+            # New features
+            'home_cohesion': f1_feat['cohesion'],
+            'away_cohesion': f2_feat['cohesion'],
+            'cohesion_diff': f1_feat['cohesion'] - f2_feat['cohesion'],
+            'home_peak_age_ratio': f1_feat['peak_age_ratio'],
+            'away_peak_age_ratio': f2_feat['peak_age_ratio'],
+            'peak_age_ratio_diff': f1_feat['peak_age_ratio'] - f2_feat['peak_age_ratio'],
+            'home_veteran_ratio': f1_feat['veteran_ratio'],
+            'away_veteran_ratio': f2_feat['veteran_ratio'],
+            'veteran_ratio_diff': f1_feat['veteran_ratio'] - f2_feat['veteran_ratio'],
+            'home_youth_ratio': f1_feat['youth_ratio'],
+            'away_youth_ratio': f2_feat['youth_ratio'],
+            'youth_ratio_diff': f1_feat['youth_ratio'] - f2_feat['youth_ratio'],
+            'home_tournament_experience': f1_feat['tournament_experience'],
+            'away_tournament_experience': f2_feat['tournament_experience'],
+            'tournament_experience_diff': f1_feat['tournament_experience'] - f2_feat['tournament_experience'],
+            'home_momentum': f1_feat['momentum'],
+            'away_momentum': f2_feat['momentum'],
+            'momentum_diff': f1_feat['momentum'] - f2_feat['momentum']
         }
         
         df_match = pd.DataFrame([row])[self.feature_cols]
@@ -214,14 +473,10 @@ class TournamentSimulator:
         return cal_preds
 
     def simulate_match_goals(self, p_home, p_draw, p_away):
-        """
-        Simulates match goals based on match outcome probabilities.
-        """
         total = p_home + p_draw + p_away
         r = random.random() * total
         
         if r < p_home:  # Home Win
-            # gd choice: [1, 2, 3, 4] with p=[0.60, 0.25, 0.10, 0.05]
             r_gd = random.random()
             if r_gd < 0.60:
                 gd = 1
@@ -232,7 +487,6 @@ class TournamentSimulator:
             else:
                 gd = 4
                 
-            # loser_goals choice: [0, 1, 2] with p=[0.55, 0.35, 0.10]
             r_lg = random.random()
             if r_lg < 0.55:
                 loser_goals = 0
@@ -240,11 +494,9 @@ class TournamentSimulator:
                 loser_goals = 1
             else:
                 loser_goals = 2
-                
             return loser_goals + gd, loser_goals, 0
             
         elif r < p_home + p_draw:  # Draw
-            # goals choice: [0, 1, 2, 3] with p=[0.30, 0.50, 0.16, 0.04]
             r_g = random.random()
             if r_g < 0.30:
                 goals = 0
@@ -257,7 +509,6 @@ class TournamentSimulator:
             return goals, goals, 1
             
         else:  # Away Win
-            # gd choice: [1, 2, 3, 4] with p=[0.60, 0.25, 0.10, 0.05]
             r_gd = random.random()
             if r_gd < 0.60:
                 gd = 1
@@ -268,7 +519,6 @@ class TournamentSimulator:
             else:
                 gd = 4
                 
-            # loser_goals choice: [0, 1, 2] with p=[0.55, 0.35, 0.10]
             r_lg = random.random()
             if r_lg < 0.55:
                 loser_goals = 0
@@ -276,7 +526,6 @@ class TournamentSimulator:
                 loser_goals = 1
             else:
                 loser_goals = 2
-                
             return loser_goals, loser_goals + gd, 2
 
     def simulate_group_stage(self):
@@ -285,6 +534,7 @@ class TournamentSimulator:
         
         for g_letter, teams in GROUPS_2026.items():
             standings = {t: {'points': 0, 'gd': 0, 'gs': 0, 'elo': self.starting_elos[t], 'team': t} for t in teams}
+            group_matches = []
             
             # Play round robin (6 matches)
             for i in range(len(teams)):
@@ -307,10 +557,12 @@ class TournamentSimulator:
                     standings[t2]['gd'] += (g2 - g1)
                     standings[t2]['gs'] += g2
                     
-            # Sort standings based on FIFA rules: Points, GD, GS, then Elo
+                    group_matches.append((t1, t2, g1, g2))
+                    
+            # Sort standings based on proper FIFA rules: Points, GD, GS, H2H, then Elo
             sorted_teams = sorted(
                 standings.values(),
-                key=lambda x: (x['points'], x['gd'], x['gs'], x['elo']),
+                key=functools.cmp_to_key(lambda x, y: compare_teams(x, y, group_matches)),
                 reverse=True
             )
             group_standings[g_letter] = sorted_teams
@@ -323,16 +575,14 @@ class TournamentSimulator:
         third_placed_teams = []
         
         for g_letter, standing in group_standings.items():
-            # Top 2 teams qualify directly
             knockout_teams[f"1{g_letter}"] = standing[0]['team']
             knockout_teams[f"2{g_letter}"] = standing[1]['team']
             
-            # Keep track of 3rd place team
             third_team = standing[2]
             third_team['group'] = g_letter
             third_placed_teams.append(third_team)
             
-        # Sort third-placed teams to find the best 8
+        # Sort third-placed teams (H2H not applicable since they are from different groups)
         sorted_thirds = sorted(
             third_placed_teams,
             key=lambda x: (x['points'], x['gd'], x['gs'], x['elo']),
@@ -340,8 +590,6 @@ class TournamentSimulator:
         )
         
         best_eight_thirds = sorted_thirds[:8]
-        
-        # Format for third place router
         third_places_formatted = [{'team': t['team'], 'group': t['group']} for t in best_eight_thirds]
         
         # Route third place teams to group winners A-H
@@ -360,7 +608,6 @@ class TournamentSimulator:
         probs = self.matchup_cache[(team1, team2, f1_c, f2_c)]
         p_home, p_draw, p_away = probs[0], probs[1], probs[2]
         
-        # Regular time goals
         g1, g2, outcome = self.simulate_match_goals(p_home, p_draw, p_away)
         
         if outcome == 0:
@@ -368,20 +615,17 @@ class TournamentSimulator:
         elif outcome == 2:
             return team2, fatigue1, fatigue2
             
-        # Draw in regular time: Go to extra time (increases fatigue)
+        # Extra Time
         fatigue1 += 1
         fatigue2 += 1
         
-        # Simulate extra-time decision (40% chance of deciding in ET, 60% chance of penalties)
         et_decided = np.random.rand() < 0.40
         if et_decided:
-            # Decide based on relative strength
             p_win_1 = p_home / (p_home + p_away)
             winner = team1 if np.random.rand() < p_win_1 else team2
             return winner, fatigue1, fatigue2
             
         # Penalty shootout
-        # Shootout model
         sq1 = self.team_features[team1]['squad_quality']
         sq2 = self.team_features[team2]['squad_quality']
         elo1 = self.starting_elos.get(team1, 1500.0) - fatigue1 * 20.0
@@ -505,49 +749,60 @@ class TournamentSimulator:
             "champion": champion
         }
 
-    def run_monte_carlo(self, num_simulations=1000):
-        """Runs the simulation multiple times and aggregates probability statistics."""
-        stats = {t: {
-            "group_stage_exit": 0,
-            "r32_exit": 0,
-            "r16_exit": 0,
-            "qf_exit": 0,
-            "sf_exit": 0,
-            "third_place": 0,
-            "runner_up": 0,
-            "champion": 0
-        } for t in self.starting_elos.keys()}
+    def run_monte_carlo(self, num_simulations=1000, num_batches=10):
+        """Runs the simulation in batches and returns mean probabilities and 95% confidence intervals."""
+        runs_per_batch = max(1, num_simulations // num_batches)
+        stages = ["group_stage_exit", "r32_exit", "r16_exit", "qf_exit", "sf_exit", "third_place", "runner_up", "champion"]
         
-        for _ in range(num_simulations):
-            res = self.simulate_tournament()
-            
-            # Extract progression
-            champ = res["champion"]
-            runner = res["runner_up"]
-            third = res["third_place"]
-            
-            stats[champ]["champion"] += 1
-            stats[runner]["runner_up"] += 1
-            stats[third]["third_place"] += 1
-            
-            # Map exits
+        batch_results = {t: {s: [] for s in stages} for t in self.starting_elos.keys()}
+        
+        for b in range(num_batches):
+            counts = {t: {s: 0 for s in stages} for t in self.starting_elos.keys()}
+            for _ in range(runs_per_batch):
+                res = self.simulate_tournament()
+                
+                champ = res["champion"]
+                runner = res["runner_up"]
+                third = res["third_place"]
+                
+                counts[champ]["champion"] += 1
+                counts[runner]["runner_up"] += 1
+                counts[third]["third_place"] += 1
+                
+                for t in self.starting_elos.keys():
+                    if t == champ or t == runner or t == third:
+                        continue
+                    if t in res["sf_teams"]:
+                        counts[t]["sf_exit"] += 1
+                    elif t in res["qf_teams"]:
+                        counts[t]["qf_exit"] += 1
+                    elif t in res["r16_teams"]:
+                        counts[t]["r16_exit"] += 1
+                    elif t in res["r32_teams"]:
+                        counts[t]["r32_exit"] += 1
+                    else:
+                        counts[t]["group_stage_exit"] += 1
+                        
             for t in self.starting_elos.keys():
-                if t == champ or t == runner or t == third:
-                    continue
-                if t in res["sf_teams"]:
-                    stats[t]["sf_exit"] += 1
-                elif t in res["qf_teams"]:
-                    stats[t]["qf_exit"] += 1
-                elif t in res["r16_teams"]:
-                    stats[t]["r16_exit"] += 1
-                elif t in res["r32_teams"]:
-                    stats[t]["r32_exit"] += 1
-                else:
-                    stats[t]["group_stage_exit"] += 1
+                for s in stages:
+                    batch_results[t][s].append(counts[t][s] / runs_per_batch)
                     
-        # Normalize to probabilities
-        probs = {}
-        for team, counts in stats.items():
-            probs[team] = {k: v / num_simulations for k, v in counts.items()}
-            
-        return probs
+        summary = {}
+        for t in self.starting_elos.keys():
+            summary[t] = {}
+            for s in stages:
+                vals = np.array(batch_results[t][s])
+                mean_val = float(np.mean(vals))
+                std_val = float(np.std(vals))
+                se = std_val / math.sqrt(num_batches)
+                ci_lower = max(0.0, mean_val - 1.96 * se)
+                ci_upper = min(1.0, mean_val + 1.96 * se)
+                
+                summary[t][s] = {
+                    "mean": mean_val,
+                    "std": std_val,
+                    "ci_lower": ci_lower,
+                    "ci_upper": ci_upper
+                }
+                
+        return summary

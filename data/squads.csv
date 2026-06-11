@@ -1,0 +1,218 @@
+team,year,player_name,club,age
+Spain,2010,Iker Casillas,Real Madrid,29
+Spain,2010,Víctor Valdés,Barcelona,28
+Spain,2010,Pepe Reina,Liverpool,27
+Spain,2010,Gerard Piqué,Barcelona,23
+Spain,2010,Carles Puyol,Barcelona,32
+Spain,2010,Carlos Marchena,Villarreal,30
+Spain,2010,Joan Capdevila,Villarreal,32
+Spain,2010,Sergio Ramos,Real Madrid,24
+Spain,2010,Álvaro Arbeloa,Real Madrid,27
+Spain,2010,Raúl Albiol,Real Madrid,24
+Spain,2010,Andrés Iniesta,Barcelona,26
+Spain,2010,Xavi Hernández,Barcelona,30
+Spain,2010,Cesc Fàbregas,Arsenal,23
+Spain,2010,Xabi Alonso,Real Madrid,28
+Spain,2010,Sergio Busquets,Barcelona,21
+Spain,2010,Javi Martínez,Athletic Bilbao,21
+Spain,2010,David Silva,Valencia,24
+Spain,2010,Juan Mata,Valencia,22
+Spain,2010,David Villa,Barcelona,28
+Spain,2010,Fernando Torres,Liverpool,26
+Spain,2010,Pedro Rodríguez,Barcelona,22
+Spain,2010,Fernando Llorente,Athletic Bilbao,25
+Spain,2010,Jesús Navas,Sevilla,24
+Germany,2014,Manuel Neuer,Bayern Munich,28
+Germany,2014,Roman Weidenfeller,Borussia Dortmund,33
+Germany,2014,Ron-Robert Zieler,Hannover 96,25
+Germany,2014,Kevin Großkreutz,Borussia Dortmund,25
+Germany,2014,Matthias Ginter,Freiburg,20
+Germany,2014,Benedikt Höwedes,Schalke 04,26
+Germany,2014,Mats Hummels,Borussia Dortmund,25
+Germany,2014,Erik Durm,Borussia Dortmund,22
+Germany,2014,Philipp Lahm,Bayern Munich,30
+Germany,2014,Per Mertesacker,Arsenal,29
+Germany,2014,Jérôme Boateng,Bayern Munich,25
+Germany,2014,Shkodran Mustafi,Sampdoria,22
+Germany,2014,Sami Khedira,Real Madrid,27
+Germany,2014,Bastian Schweinsteiger,Bayern Munich,29
+Germany,2014,Mesut Özil,Arsenal,25
+Germany,2014,Julian Draxler,Schalke 04,20
+Germany,2014,Toni Kroos,Bayern Munich,24
+Germany,2014,Mario Götze,Bayern Munich,22
+Germany,2014,Christoph Kramer,Borussia Mönchengladbach,23
+Germany,2014,Thomas Müller,Bayern Munich,24
+Germany,2014,Miroslav Klose,Lazio,36
+Germany,2014,Lukas Podolski,Arsenal,29
+Germany,2014,André Schürrle,Chelsea,23
+France,2018,Hugo Lloris,Tottenham,31
+France,2018,Steve Mandanda,Marseille,33
+France,2018,Alphonse Areola,PSG,25
+France,2018,Benjamin Pavard,Stuttgart,22
+France,2018,Presnel Kimpembe,PSG,22
+France,2018,Raphaël Varane,Real Madrid,25
+France,2018,Samuel Umtiti,Barcelona,24
+France,2018,Adil Rami,Marseille,32
+France,2018,Djibril Sidibé,Monaco,25
+France,2018,Benjamin Mendy,Manchester City,23
+France,2018,Lucas Hernandez,Atletico Madrid,22
+France,2018,Paul Pogba,Manchester United,25
+France,2018,Thomas Lemar,Monaco,22
+France,2018,Corentin Tolisso,Bayern Munich,23
+France,2018,N'Golo Kanté,Chelsea,27
+France,2018,Blaise Matuidi,Juventus,31
+France,2018,Steven Nzonzi,Sevilla,29
+France,2018,Antoine Griezmann,Atletico Madrid,27
+France,2018,Olivier Giroud,Chelsea,31
+France,2018,Kylian Mbappé,PSG,19
+France,2018,Ousmane Dembélé,Barcelona,21
+France,2018,Nabil Fekir,Lyon,24
+France,2018,Florian Thauvin,Marseille,25
+Argentina,2022,Franco Armani,River Plate,36
+Argentina,2022,Gerónimo Rulli,Villarreal,30
+Argentina,2022,Emiliano Martínez,Aston Villa,30
+Argentina,2022,Juan Foyth,Villarreal,24
+Argentina,2022,Nicolas Tagliafico,Lyon,30
+Argentina,2022,Gonzalo Montiel,Sevilla,25
+Argentina,2022,Germán Pezzella,Real Betis,31
+Argentina,2022,Marcos Acuña,Sevilla,31
+Argentina,2022,Cristian Romero,Tottenham,24
+Argentina,2022,Nicolás Otamendi,Benfica,34
+Argentina,2022,Lisandro Martínez,Manchester United,24
+Argentina,2022,Nahuel Molina,Atletico Madrid,24
+Argentina,2022,Leandro Paredes,Juventus,28
+Argentina,2022,Rodrigo De Paul,Atletico Madrid,28
+Argentina,2022,Marcos Acuña,Sevilla,31
+Argentina,2022,Alexis Mac Allister,Brighton,23
+Argentina,2022,Ángel Di María,Juventus,34
+Argentina,2022,Guido Rodríguez,Real Betis,28
+Argentina,2022,Alejandro Gómez,Sevilla,34
+Argentina,2022,Enzo Fernández,Benfica,21
+Argentina,2022,Exequiel Palacios,Leverkusen,24
+Argentina,2022,Julian Álvarez,Manchester City,22
+Argentina,2022,Lionel Messi,PSG,35
+Argentina,2022,Thiago Almada,Atlanta United,21
+Argentina,2022,Ángel Correa,Atletico Madrid,27
+Argentina,2022,Paulo Dybala,Roma,29
+Argentina,2022,Lautaro Martínez,Inter Milan,25
+France,2026,Mike Maignan,AC Milan,30
+France,2026,Brice Samba,Lens,32
+France,2026,Alphonse Areola,West Ham,33
+France,2026,William Saliba,Arsenal,25
+France,2026,Ibrahima Konaté,Liverpool,27
+France,2026,Dayot Upamecano,Bayern Munich,27
+France,2026,Jules Koundé,Barcelona,27
+France,2026,Benjamin Pavard,Inter Milan,30
+France,2026,Theo Hernandez,AC Milan,28
+France,2026,Ferland Mendy,Real Madrid,31
+France,2026,Jonathan Clauss,Marseille,33
+France,2026,Aurélien Tchouaméni,Real Madrid,26
+France,2026,Eduardo Camavinga,Real Madrid,23
+France,2026,Adrien Rabiot,Juventus,31
+France,2026,Youssouf Fofana,Monaco,27
+France,2026,Warren Zaïre-Emery,PSG,20
+France,2026,Antoine Griezmann,Atletico Madrid,35
+France,2026,Kylian Mbappé,Real Madrid,27
+France,2026,Ousmane Dembélé,PSG,29
+France,2026,Marcus Thuram,Inter Milan,28
+France,2026,Olivier Giroud,LAFC,39
+France,2026,Randal Kolo Muani,PSG,27
+France,2026,Kingsley Coman,Bayern Munich,30
+France,2026,Bradley Barcola,PSG,23
+Spain,2026,Unai Simón,Athletic Bilbao,28
+Spain,2026,David Raya,Arsenal,30
+Spain,2026,Alex Remiro,Real Sociedad,31
+Spain,2026,Robin Le Normand,Atletico Madrid,29
+Spain,2026,Aymeric Laporte,Al-Nassr,32
+Spain,2026,Daniel Carvajal,Real Madrid,34
+Spain,2026,Jesús Navas,Sevilla,40
+Spain,2026,Alejandro Grimaldo,Leverkusen,30
+Spain,2026,Marc Cucurella,Chelsea,27
+Spain,2026,Dani Vivian,Athletic Bilbao,26
+Spain,2026,Rodri Hernández,Manchester City,29
+Spain,2026,Martín Zubimendi,Real Sociedad,27
+Spain,2026,Mikel Merino,Arsenal,29
+Spain,2026,Pedri González,Barcelona,23
+Spain,2026,Fermín López,Barcelona,23
+Spain,2026,Alex Baena,Villarreal,24
+Spain,2026,Dani Olmo,Barcelona,28
+Spain,2026,Lamine Yamal,Barcelona,18
+Spain,2026,Nico Williams,Athletic Bilbao,23
+Spain,2026,Álvaro Morata,AC Milan,33
+Spain,2026,Joselu Mato,Al-Gharafa,36
+Spain,2026,Ferran Torres,Barcelona,26
+Spain,2026,Mikel Oyarzabal,Real Sociedad,29
+Spain,2026,Ayoze Pérez,Villarreal,32
+Argentina,2026,Emiliano Martínez,Aston Villa,33
+Argentina,2026,Gerónimo Rulli,Marseille,34
+Argentina,2026,Walter Benítez,PSV Eindhoven,33
+Argentina,2026,Cristian Romero,Tottenham,28
+Argentina,2026,Lisandro Martínez,Manchester United,28
+Argentina,2026,Nicolás Otamendi,Benfica,38
+Argentina,2026,Nahuel Molina,Atletico Madrid,28
+Argentina,2026,Gonzalo Montiel,Sevilla,29
+Argentina,2026,Nicolás Tagliafico,Lyon,33
+Argentina,2026,Marcos Acuña,River Plate,34
+Argentina,2026,German Pezzella,River Plate,34
+Argentina,2026,Rodrigo De Paul,Atletico Madrid,32
+Argentina,2026,Enzo Fernández,Chelsea,25
+Argentina,2026,Alexis Mac Allister,Liverpool,27
+Argentina,2026,Leandro Paredes,Roma,31
+Argentina,2026,Giovani Lo Celso,Betis,30
+Argentina,2026,Exequiel Palacios,Leverkusen,27
+Argentina,2026,Guido Rodríguez,West Ham,32
+Argentina,2026,Lionel Messi,Inter Miami,38
+Argentina,2026,Ángel Di María,Benfica,38
+Argentina,2026,Lautaro Martínez,Inter Milan,28
+Argentina,2026,Julián Álvarez,Atletico Madrid,26
+Argentina,2026,Alejandro Garnacho,Manchester United,21
+Argentina,2026,Nicolás González,Juventus,28
+Argentina,2026,Valentin Carboni,Marseille,21
+Germany,2026,Marc-André ter Stegen,Barcelona,34
+Germany,2026,Oliver Baumann,Hoffenheim,36
+Germany,2026,Alexander Nübel,Stuttgart,29
+Germany,2026,Antonio Rüdiger,Real Madrid,33
+Germany,2026,Jonathan Tah,Leverkusen,30
+Germany,2026,Nico Schlotterbeck,Borussia Dortmund,26
+Germany,2026,Waldemar Anton,Borussia Dortmund,29
+Germany,2026,Maximilian Mittelstädt,Stuttgart,29
+Germany,2026,David Raum,RB Leipzig,28
+Germany,2026,Benjamin Henrichs,RB Leipzig,29
+Germany,2026,Joshua Kimmich,Bayern Munich,31
+Germany,2026,Robert Andrich,Leverkusen,31
+Germany,2026,Pascal Groß,Borussia Dortmund,34
+Germany,2026,Aleksandar Pavlović,Bayern Munich,22
+Germany,2026,Emre Can,Borussia Dortmund,32
+Germany,2026,Florian Wirtz,Leverkusen,23
+Germany,2026,Jamal Musiala,Bayern Munich,23
+Germany,2026,Ilkay Gündogan,Barcelona,35
+Germany,2026,Leroy Sané,Bayern Munich,30
+Germany,2026,Thomas Müller,Bayern Munich,36
+Germany,2026,Kai Havertz,Arsenal,27
+Germany,2026,Niclas Füllkrug,West Ham,33
+Germany,2026,Deniz Undav,Stuttgart,29
+Germany,2026,Maximilian Beier,Borussia Dortmund,23
+Brazil,2026,Alisson Becker,Liverpool,33
+Brazil,2026,Ederson Moraes,Manchester City,32
+Brazil,2026,Bento Krepski,Al-Nassr,26
+Brazil,2026,Marquinhos Aoás,PSG,32
+Brazil,2026,Gabriel Magalhães,Arsenal,28
+Brazil,2026,Éder Militão,Real Madrid,28
+Brazil,2026,Lucas Beraldo,PSG,22
+Brazil,2026,Danilo da Silva,Juventus,34
+Brazil,2026,Yan Couto,Borussia Dortmund,24
+Brazil,2026,Wendell Nascimento,Porto,32
+Brazil,2026,Guilherme Arana,Atlético Mineiro,29
+Brazil,2026,Bruno Guimarães,Newcastle,28
+Brazil,2026,Douglas Luiz,Juventus,28
+Brazil,2026,João Gomes,Wolverhampton,25
+Brazil,2026,Lucas Paquetá,West Ham,28
+Brazil,2026,Andreas Pereira,Fulham,30
+Brazil,2026,Éderson dos Santos,Atalanta,26
+Brazil,2026,Vinícius Júnior,Real Madrid,25
+Brazil,2026,Rodrygo Goes,Real Madrid,25
+Brazil,2026,Endrick Felipe,Real Madrid,19
+Brazil,2026,Raphinha Dias,Barcelona,29
+Brazil,2026,Gabriel Martinelli,Arsenal,25
+Brazil,2026,Savinho Moreira,Manchester City,22
+Brazil,2026,Neymar da Silva,Al-Hilal,34

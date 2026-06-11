@@ -1,8 +1,9 @@
 # 🏆 FIFA 2026 World Cup Predictor
 
-A state-of-the-art machine learning engine and Monte Carlo simulator designed to model and simulate the expanded **48-team FIFA 2026 World Cup** in North America. Built using **XGBoost** for match outcome probability estimation and **Platt Scaling** for probability calibration, this application achieves rigorous statistical validity while offering an interactive, premium **Streamlit** dashboard.
+A machine learning and Monte Carlo simulation engine designed to model and simulate the expanded **48-team FIFA 2026 World Cup** in North America. Built using **XGBoost** for match outcome probability estimation and **Platt Scaling** for probability calibration, this application provides a statistical framework for tournament modeling and includes an interactive **Streamlit** dashboard.
 
 ---
+
 
 ## 📊 Model Performance Metrics
 
@@ -10,12 +11,12 @@ The model achieves high accuracy and optimal probability calibration, evaluated 
 
 | Metric | Uncalibrated XGBoost | Calibrated Model (Platt Scaling) |
 | :--- | :---: | :---: |
-| **Train Log Loss (2000–2013)** | 0.9109 | **0.8739** |
-| **Validation B Log Loss (2016–2017)** | 0.9109 | **0.8762** |
-| **Test Log Loss (2018)** | 0.9506 | **0.9175** |
-| **Holdout Log Loss (2022)** | 0.9478 | **0.9026** |
-| **Test Accuracy (2018)** | — | **57.13%** |
-| **Holdout Accuracy (2022)** | — | **58.74%** |
+| **Train Log Loss (2000–2013)** | 0.9091 | **0.8723** |
+| **Validation B Log Loss (2016–2017)** | 0.9117 | **0.8769** |
+| **Test Log Loss (2018)** | 0.9519 | **0.9179** |
+| **Holdout Log Loss (2022)** | 0.9482 | **0.9015** |
+| **Test Accuracy (2018)** | — | **56.09%** |
+| **Holdout Accuracy (2022)** | — | **58.95%** |
 
 ---
 
@@ -25,7 +26,7 @@ To capture the multi-dimensional nature of international football, the predictor
 
 ### 🔹 Tier 1: Relative Strength (Foundation)
 *   **Elo Rating Difference (`elo_diff`)**: $Elo_{Home} - Elo_{Away}$. The primary predictor of match outcomes.
-*   **Fatigue Elo Penalty**: Accumulating fatigue degrades performance. For every fatigue unit a team has accumulated in previous tournament stages, their effective Elo is penalized by **20 points** ($Elo_{effective} = Elo_{base} - 20 \times Fatigue$).
+*   **Fatigue Elo Penalty**: A heuristic simulation parameter representing how tournament fatigue might degrade performance. For every fatigue unit a team has accumulated in previous tournament stages, their effective Elo is penalized by **20 points** ($Elo_{effective} = Elo_{base} - 20 \times Fatigue$). *Note: This 20-point penalty is an arbitrary heuristic used to model schedule-induced fatigue and has not been statistically calibrated or validated against physical tracking data.*
 *   **Squad Quality Difference (`squad_quality_diff`)**: Log-transformed squad market value difference modeled using a curated temporal index relative to continental peers.
 
 ### 🔹 Tier 2: Recent Form (Time-Decayed)
@@ -36,7 +37,7 @@ To capture the multi-dimensional nature of international football, the predictor
 
 ### 🔹 Tier 3: Coach Experience & Stability
 *   **Interim/New Coach Flags (`home_interim_coach`, `away_interim_coach`)**: Flags if a coach's tenure at match date is under **180 days** (associated with tactical instability).
-*   **Coach Success Ratings**: Merged from historical coach performance registries to capture manager caliber.
+*   **Coach Success Ratings**: Mapped from historical coach performance registries to capture manager caliber. *Note: Due to data sparsity, teams outside the top 10 receive fallback confederation-level baseline values. This feature should be treated as a heuristic baseline rather than a fully validated predictor.*
 
 ### 🔹 Tier 4: Team Chemistry & Depth
 *   **Squad Quality Ratings**: A temporal squad score rating (e.g. Argentina 2022: `1.28`, Argentina 2023–2026: `1.30`) mapped over distinct temporal bounds, reflecting the generation's depth.
@@ -67,13 +68,15 @@ To avoid leakage and double-dipping, a **five-stage sequential temporal split** 
 The simulation engine models the expanded **48-team FIFA 2026 World Cup** following the official format:
 
 ### 1️⃣ Group Stage
-*   **12 Groups of 4 teams** play a round-robin schedule.
 *   Match outcomes are simulated using calibrated win-draw-loss probabilities.
-*   Standings are determined deterministically using FIFA tie-breakers:
+*   Standings are determined deterministically using official FIFA tie-breakers:
     1.  Points
     2.  Goal Difference (GD)
     3.  Goals Scored (GS)
-    4.  Base Elo Rating (as the ultimate fallback)
+    4.  Head-to-Head (H2H) Points
+    5.  H2H Goal Difference
+    6.  H2H Goals Scored
+    7.  Elo Rating (as the ultimate fallback)
 
 ### 2️⃣ Best Third-Place Routing
 *   The **8 best third-placed teams** advance to the Round of 32.
@@ -85,17 +88,21 @@ The simulation engine models the expanded **48-team FIFA 2026 World Cup** follow
     *   **Extra Time** is simulated: Teams receive a **+1 fatigue unit** increase.
     *   **Penalty Shootout**: Modeled using a customized probability model taking into account the squad quality difference, Elo difference, and cumulative fatigue of both squads.
 
+### 🏥 Injury Shock System
+The simulation and predictor support an interactive **Injury Shock System** to simulate key player injuries. Applying a shock to a team penalizes their rating dynamically (Key: -30 Elo, World Class: -50 Elo, Indispensable: -80 Elo), updates squad quality, and instantly updates the matchup cache to re-run simulations.
+
 ---
 
 ## 🖥️ Streamlit Interactive Dashboard
 
-The dashboard consists of five premium, interactive tabs:
+The dashboard consists of six interactive tabs:
 
-1.  **🏆 Tournament Overview**: Displays Monte Carlo simulation results after 1,000 to 10,000 iterations. Features Plotly charts for championship contenders, bracket progression probabilities, and Champion DNA overlays.
-2.  **⚔️ Match Predictor**: A head-to-head calculator that outputs win/draw/loss probabilities for any two teams, allowing manual configuration of venue, neural status, and custom team fatigue levels.
-3.  **📈 Team Analysis**: Explores detailed team profiles, including active coach details, squad quality indexes, and historical trajectory.
-4.  **🧪 Scenario Simulator**: A sandbox tab allowing users to modify a team's Elo, squad quality, or coach status in memory to see how it affects simulation outcomes.
-5.  **⚙️ Model Transparency**: Displays model parameters, feature importance charts, and log loss metrics across validation splits.
+1.  **🏆 Tournament Overview**: Displays Monte Carlo simulation results after 1,000 to 10,000 iterations with 95% Confidence Intervals. Features Plotly charts for championship contenders, bracket progression probabilities, and Champion DNA overlays.
+2.  **⚔️ Match Predictor**: A head-to-head calculator that outputs calibrated win/draw/loss probabilities with 95% Confidence Intervals for any two teams, allowing manual configuration of venue, host advantages, and fatigue.
+3.  **🔍 Team Analysis**: Explores detailed team profiles, including active coach details, squad quality indexes, and tournament metrics.
+4.  **🎮 Scenario Simulator**: A sandbox tab allowing users to modify a team's Elo, squad quality, or coach status in memory to see how it affects simulation outcomes with Before vs. After confidence interval comparisons.
+5.  **⏪ Historical Replay**: Replays the 2018 and 2022 World Cups, comparing the model's calibrated predictions side-by-side with actual results and displaying overall log loss and accuracy metrics.
+6.  **⚙️ Model Transparency**: Displays Platt Scaling calibration curves (Reliability Diagrams), validation log loss metrics, feature importance, and KS-test feature drift analyses.
 
 ---
 

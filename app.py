@@ -8,6 +8,7 @@ import json
 import time
 import os
 import random
+import inspect
 
 # Import project simulator and features
 from src.simulator import TournamentSimulator, GROUPS_2026
@@ -102,15 +103,19 @@ st.markdown("""
         color: #00f2fe !important;
         border-color: #00f2fe !important;
     }
+    .stButton > button {
+        width: 100%;
+    }
     
     /* Interactive Walkthrough styling */
     .walkthrough-match-card {
         background: rgba(255, 255, 255, 0.02);
         border: 1px solid rgba(255, 255, 255, 0.05);
-        border-radius: 10px;
+        border-radius: 8px;
         padding: 16px;
         margin-bottom: 12px;
         transition: all 0.3s ease;
+        overflow: hidden;
     }
     .walkthrough-match-card:hover {
         border-color: rgba(0, 242, 254, 0.3);
@@ -128,6 +133,9 @@ st.markdown("""
     .walkthrough-team-name {
         font-weight: 600;
         font-size: 1.05rem;
+        min-width: 0;
+        overflow-wrap: anywhere;
+        line-height: 1.25;
     }
     .walkthrough-team-winner {
         color: #00f2fe !important;
@@ -137,14 +145,17 @@ st.markdown("""
         font-weight: 800;
         text-align: center;
         color: #ffffff;
+        flex: 0 0 80px;
     }
     .walkthrough-prob-container {
         display: flex;
         align-items: center;
         justify-content: space-between;
+        gap: 8px;
         margin-top: 8px;
         font-size: 0.8rem;
         color: #94a3b8;
+        flex-wrap: wrap;
     }
     .walkthrough-bar-container {
         height: 6px;
@@ -170,6 +181,56 @@ st.markdown("""
         font-weight: 600;
         text-transform: uppercase;
         letter-spacing: 0.05em;
+        display: inline-flex;
+        max-width: 100%;
+        white-space: normal;
+    }
+    .walkthrough-card-row {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 10px;
+    }
+    .walkthrough-card-meta {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 8px;
+        margin-top: 4px;
+        flex-wrap: wrap;
+    }
+    .walkthrough-knockout-grid,
+    .walkthrough-finals-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+        gap: 14px;
+        align-items: stretch;
+    }
+    .walkthrough-knockout-grid .walkthrough-match-card,
+    .walkthrough-finals-grid .walkthrough-match-card {
+        height: 100%;
+        margin-bottom: 0;
+    }
+    .walkthrough-card-title {
+        font-size: 0.78rem;
+        color: #94a3b8;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        margin-bottom: 10px;
+        font-weight: 700;
+    }
+    @media (max-width: 760px) {
+        .walkthrough-knockout-grid,
+        .walkthrough-finals-grid {
+            grid-template-columns: 1fr;
+        }
+        .walkthrough-score {
+            flex-basis: 64px;
+            font-size: 1.1rem;
+        }
+        .walkthrough-team-name {
+            font-size: 0.95rem;
+        }
     }
     .walkthrough-badge-et {
         background-color: rgba(234, 179, 8, 0.15);
@@ -248,6 +309,33 @@ def format_team_name(team_name: str, include_flag: bool = True) -> str:
     return f"{flag} {display_name}"
 
 
+def get_prob_bar_widths(probs, min_width=5.0):
+    """Return visible bar widths that preserve proportions without overflowing."""
+    raw_widths = [max(min_width, float(p) * 100.0) for p in probs]
+    total_width = sum(raw_widths)
+    if total_width <= 100.0:
+        return raw_widths
+    return [(width / total_width) * 100.0 for width in raw_widths]
+
+
+def stretch_width_kwargs(streamlit_fn):
+    """Use the non-deprecated stretch API when available, while keeping older Streamlit installs usable."""
+    params = inspect.signature(streamlit_fn).parameters
+    if "width" in params:
+        return {"width": "stretch"}
+    if "use_container_width" in params:
+        return {"use_container_width": True}
+    return {}
+
+
+def render_html(html: str):
+    """Render raw dashboard HTML without exposing tags in Streamlit markdown."""
+    if hasattr(st, "html"):
+        st.html(html)
+    else:
+        st.markdown(html, unsafe_allow_html=True)
+
+
 COACH_STATS = {
     "Lionel Scaloni": {"win_rate": 0.68, "intl_win_rate": 0.68, "world_cups": 1, "trophies": ["World Cup 2022", "Copa América 2021, 2024"]},
     "Didier Deschamps": {"win_rate": 0.64, "intl_win_rate": 0.64, "world_cups": 3, "trophies": ["World Cup 2018", "Nations League 2021"]},
@@ -312,7 +400,7 @@ st.sidebar.markdown("<h3 style='color: #00f2fe; font-weight:700;'>Simulation Par
 num_simulations = st.sidebar.slider("Number of Simulations", min_value=100, max_value=10000, value=2000, step=100)
 seed = st.sidebar.number_input("Random Seed", value=42, step=1)
 
-run_button = st.sidebar.button("⚡ Run Tournament Simulation", width="stretch")
+run_button = st.sidebar.button("⚡ Run Tournament Simulation")
 
 # Sidebar Injury Shocks
 st.sidebar.markdown("---")
@@ -415,7 +503,7 @@ with tab1:
                 paper_bgcolor='rgba(0,0,0,0)',
                 plot_bgcolor='rgba(0,0,0,0)'
             )
-            st.plotly_chart(fig_champ, width='stretch')
+            st.plotly_chart(fig_champ, **stretch_width_kwargs(st.plotly_chart))
             st.markdown("</div>", unsafe_allow_html=True)
             
         with col2:
@@ -439,7 +527,7 @@ with tab1:
                 paper_bgcolor='rgba(0,0,0,0)',
                 plot_bgcolor='rgba(0,0,0,0)'
             )
-            st.plotly_chart(fig_prog, width='stretch')
+            st.plotly_chart(fig_prog, **stretch_width_kwargs(st.plotly_chart))
             st.markdown("</div>", unsafe_allow_html=True)
             
         # Champion DNA Comparison
@@ -653,7 +741,7 @@ with tab4:
         edited_interim = st.checkbox("Is Interim Coach", value=bool(coach_sc['is_interim']))
         st.markdown("</div>", unsafe_allow_html=True)
         
-    run_scen = st.button("🚀 Run Scenario Simulation (1,000 Runs)", width="stretch")
+    run_scen = st.button("🚀 Run Scenario Simulation (1,000 Runs)")
     
     if run_scen:
         # Save originals
@@ -787,7 +875,7 @@ with tab5:
                         "Home Win Prob", "Draw Prob", "Away Win Prob",
                         "Predicted Outcome", "Actual Outcome", "Status"
                     ]
-                    st.dataframe(stage_matches[display_cols].reset_index(drop=True), width='stretch')
+                    st.dataframe(stage_matches[display_cols].reset_index(drop=True), **stretch_width_kwargs(st.dataframe))
     else:
         st.warning("Historical backtest data not found. Please verify the `models/historical_backtests.json` file is present.")
 
@@ -926,7 +1014,7 @@ with tab6:
                     bgcolor="rgba(0,0,0,0)"
                 )
             )
-            st.plotly_chart(fig_cal, width='stretch')
+            st.plotly_chart(fig_cal, **stretch_width_kwargs(st.plotly_chart))
             st.markdown("</div>", unsafe_allow_html=True)
             
     # Feature Importance & Drift in two columns
@@ -955,7 +1043,7 @@ with tab6:
             paper_bgcolor='rgba(0,0,0,0)',
             plot_bgcolor='rgba(0,0,0,0)'
         )
-        st.plotly_chart(fig_imp, width='stretch')
+        st.plotly_chart(fig_imp, **stretch_width_kwargs(st.plotly_chart))
         st.markdown("</div>", unsafe_allow_html=True)
         
     with col_ta_2:
@@ -973,7 +1061,11 @@ with tab6:
                     "P-Value": f"{d['p_value']:.4f}",
                     "Drift?": "Yes ⚠️" if d['drift_detected'] else "No"
                 })
-            st.dataframe(pd.DataFrame(drift_rows).sort_values(by="KS Stat", ascending=False).reset_index(drop=True), width='stretch', height=400)
+            st.dataframe(
+                pd.DataFrame(drift_rows).sort_values(by="KS Stat", ascending=False).reset_index(drop=True),
+                height=400,
+                **stretch_width_kwargs(st.dataframe)
+            )
         else:
             st.write("Feature drift report not found.")
         st.markdown("</div>", unsafe_allow_html=True)
@@ -1143,9 +1235,7 @@ with tab7:
                     probs = m["probs"]  # [Home Win, Draw, Away Win]
                     
                     # Compute prob bar widths
-                    p1_w = max(5.0, probs[0] * 100.0)
-                    p_draw_w = max(5.0, probs[1] * 100.0)
-                    p2_w = max(5.0, probs[2] * 100.0)
+                    p1_w, p_draw_w, p2_w = get_prob_bar_widths(probs)
                     
                     is_t1_winner = goals1 > goals2
                     is_t2_winner = goals2 > goals1
@@ -1156,9 +1246,9 @@ with tab7:
 
                     st.markdown(f"""
                     <div class="walkthrough-match-card {card_winner_class}">
-                        <div style="display: flex; justify-content: space-between; align-items: center;">
+                        <div class="walkthrough-card-row">
                             <div class="walkthrough-team-name {t1_class}" style="flex: 1;">{format_team_name(t1)}</div>
-                            <div class="walkthrough-score" style="width: 80px;">{goals1} - {goals2}</div>
+                            <div class="walkthrough-score">{goals1} - {goals2}</div>
                             <div class="walkthrough-team-name {t2_class}" style="flex: 1; text-align: right;">{format_team_name(t2)}</div>
                         </div>
                         <div class="walkthrough-bar-container">
@@ -1190,7 +1280,7 @@ with tab7:
                 df_standings["Team"] = df_standings["Team"].apply(format_team_name)
                 
                 # Render using table
-                st.dataframe(df_standings.reset_index(drop=True), width=500, height=180)
+                st.dataframe(df_standings.reset_index(drop=True), height=180, **stretch_width_kwargs(st.dataframe))
 
         with w_tab2:
             st.markdown("#### ⚖️ Best 3rd-Place Teams & Routing Logic")
@@ -1250,62 +1340,62 @@ with tab7:
                 "Finals"
             ])
 
-            def render_knockout_matches(matches_list):
-                # Render matches in 2 columns
-                cols = st.columns(2)
-                for idx, m in enumerate(matches_list):
-                    t1, t2 = m["team1"], m["team2"]
-                    goals1, goals2 = m["goals1"], m["goals2"]
-                    probs = m["probs"]  # [Home, Draw, Away]
-                    winner = m["winner"]
-                    
-                    p1_w = max(5.0, probs[0] * 100.0)
-                    p_draw_w = max(5.0, probs[1] * 100.0)
-                    p2_w = max(5.0, probs[2] * 100.0)
+            def knockout_card_html(m, title="", winner_label="Winner", champion_card=False):
+                t1, t2 = m["team1"], m["team2"]
+                goals1, goals2 = m["goals1"], m["goals2"]
+                probs = m["probs"]  # [Home, Draw, Away]
+                winner = m["winner"]
 
-                    is_t1_winner = winner == t1
-                    is_t2_winner = winner == t2
+                p1_w, p_draw_w, p2_w = get_prob_bar_widths(probs)
+                t1_class = "walkthrough-team-winner" if winner == t1 else ""
+                t2_class = "walkthrough-team-winner" if winner == t2 else ""
+                score_style = "font-size: 1.5rem;" if champion_card else ""
+                border_style = "border-width: 2px;" if champion_card else ""
 
-                    t1_class = "walkthrough-team-winner" if is_t1_winner else ""
-                    t2_class = "walkthrough-team-winner" if is_t2_winner else ""
-                    card_winner_class = "walkthrough-winner-card"
+                badges_html = ""
+                if m.get("penalty_shootout"):
+                    p1_shootout_pct = m.get("shootout_p1", 0.5)
+                    badges_html = f'<span class="walkthrough-badge walkthrough-badge-pk">Pens ({format_team_name(m["shootout_winner"])} won, {p1_shootout_pct:.0%} Prob)</span>'
+                elif m.get("extra_time"):
+                    badges_html = f'<span class="walkthrough-badge walkthrough-badge-et">Extra Time</span>'
 
-                    badges_html = ""
-                    if m.get("penalty_shootout"):
-                        p1_shootout_pct = m.get("shootout_p1", 0.5)
-                        badges_html = f'<span class="walkthrough-badge walkthrough-badge-pk">Pens ({format_team_name(m["shootout_winner"])} won, {p1_shootout_pct:.0%} Prob)</span>'
-                    elif m.get("extra_time"):
-                        badges_html = f'<span class="walkthrough-badge walkthrough-badge-et">Extra Time</span>'
+                fat_info = ""
+                if m.get("fatigue1", 0) > 0 or m.get("fatigue2", 0) > 0:
+                    fat_info = f'<div style="font-size:0.75rem; color:#94a3b8; margin-top:4px;">Fatigue: {format_team_name(t1)} (F:{m.get("fatigue1", 0)}) vs {format_team_name(t2)} (F:{m.get("fatigue2", 0)})</div>'
 
-                    # Check if fatigue exists
-                    fat_info = ""
-                    if m.get("fatigue1", 0) > 0 or m.get("fatigue2", 0) > 0:
-                        fat_info = f'<div style="font-size:0.75rem; color:#94a3b8; margin-top:4px;">Fatigue: {format_team_name(t1)} (F:{m.get("fatigue1", 0)}) vs {format_team_name(t2)} (F:{m.get("fatigue2", 0)})</div>'
+                title_html = f'<div class="walkthrough-card-title">{title}</div>' if title else ""
+                winner_color = "#00f2fe" if champion_card else "#94a3b8"
+                winner_weight = "bold" if champion_card else "normal"
 
-                    cols[idx % 2].markdown(f"""
-                    <div class="walkthrough-match-card {card_winner_class}">
-                        <div style="display: flex; justify-content: space-between; align-items: center;">
-                            <div class="walkthrough-team-name {t1_class}" style="flex: 1;">{format_team_name(t1)}</div>
-                            <div class="walkthrough-score" style="width: 80px;">{goals1} - {goals2}</div>
-                            <div class="walkthrough-team-name {t2_class}" style="flex: 1; text-align: right;">{format_team_name(t2)}</div>
-                        </div>
-                        <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 4px;">
-                            {badges_html}
-                            <div style="font-size: 0.75rem; color: #94a3b8;">Winner: <b>{format_team_name(winner)}</b></div>
-                        </div>
-                        {fat_info}
-                        <div class="walkthrough-bar-container">
-                            <div class="walkthrough-bar-home" style="width: {p1_w}%;"></div>
-                            <div class="walkthrough-bar-draw" style="width: {p_draw_w}%;"></div>
-                            <div class="walkthrough-bar-away" style="width: {p2_w}%;"></div>
-                        </div>
-                        <div class="walkthrough-prob-container">
-                            <span>Win: {probs[0]:.1%}</span>
-                            <span>Draw: {probs[1]:.1%}</span>
-                            <span>Win: {probs[2]:.1%}</span>
-                        </div>
+                return f"""
+                <div class="walkthrough-match-card walkthrough-winner-card" style="{border_style}">
+                    {title_html}
+                    <div class="walkthrough-card-row">
+                        <div class="walkthrough-team-name {t1_class}" style="flex: 1;">{format_team_name(t1)}</div>
+                        <div class="walkthrough-score" style="{score_style}">{goals1} - {goals2}</div>
+                        <div class="walkthrough-team-name {t2_class}" style="flex: 1; text-align: right;">{format_team_name(t2)}</div>
                     </div>
-                    """, unsafe_allow_html=True)
+                    <div class="walkthrough-card-meta">
+                        {badges_html}
+                        <div style="font-size: 0.8rem; color: {winner_color}; font-weight: {winner_weight};">{winner_label}: <b>{format_team_name(winner)}</b></div>
+                    </div>
+                    {fat_info}
+                    <div class="walkthrough-bar-container">
+                        <div class="walkthrough-bar-home" style="width: {p1_w}%;"></div>
+                        <div class="walkthrough-bar-draw" style="width: {p_draw_w}%;"></div>
+                        <div class="walkthrough-bar-away" style="width: {p2_w}%;"></div>
+                    </div>
+                    <div class="walkthrough-prob-container">
+                        <span>Win: {probs[0]:.1%}</span>
+                        <span>Draw: {probs[1]:.1%}</span>
+                        <span>Win: {probs[2]:.1%}</span>
+                    </div>
+                </div>
+                """
+
+            def render_knockout_matches(matches_list):
+                cards_html = "".join(knockout_card_html(m) for m in matches_list)
+                render_html(f'<div class="walkthrough-knockout-grid">{cards_html}</div>')
 
             with k_tab1:
                 st.markdown("##### Round of 32 Matches")
@@ -1324,104 +1414,18 @@ with tab7:
                 render_knockout_matches(details["sf_matches"])
 
             with k_tab5:
-                col_final, col_third = st.columns(2)
-                with col_final:
-                    st.markdown("##### 🏆 World Cup Final")
-                    m = details["final_match"][0]
-                    t1, t2 = m["team1"], m["team2"]
-                    goals1, goals2 = m["goals1"], m["goals2"]
-                    probs = m["probs"]
-                    winner = m["winner"]
-                    
-                    p1_w = max(5.0, probs[0] * 100.0)
-                    p_draw_w = max(5.0, probs[1] * 100.0)
-                    p2_w = max(5.0, probs[2] * 100.0)
-
-                    is_t1_winner = winner == t1
-                    is_t2_winner = winner == t2
-
-                    t1_class = "walkthrough-team-winner" if is_t1_winner else ""
-                    t2_class = "walkthrough-team-winner" if is_t2_winner else ""
-
-                    badges_html = ""
-                    if m.get("penalty_shootout"):
-                        p1_shootout_pct = m.get("shootout_p1", 0.5)
-                        badges_html = f'<span class="walkthrough-badge walkthrough-badge-pk">Pens ({format_team_name(m["shootout_winner"])} won, {p1_shootout_pct:.0%} Prob)</span>'
-                    elif m.get("extra_time"):
-                        badges_html = f'<span class="walkthrough-badge walkthrough-badge-et">Extra Time</span>'
-
-                    st.markdown(f"""
-                    <div class="walkthrough-match-card walkthrough-winner-card" style="border-width: 2px;">
-                        <div style="display: flex; justify-content: space-between; align-items: center;">
-                            <div class="walkthrough-team-name {t1_class}" style="flex: 1;">{format_team_name(t1)}</div>
-                            <div class="walkthrough-score" style="width: 80px; font-size: 1.5rem;">{goals1} - {goals2}</div>
-                            <div class="walkthrough-team-name {t2_class}" style="flex: 1; text-align: right;">{format_team_name(t2)}</div>
-                        </div>
-                        <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 6px;">
-                            {badges_html}
-                            <div style="font-size: 0.8rem; color: #00f2fe; font-weight: bold;">World Champion: {format_team_name(winner)}</div>
-                        </div>
-                        <div class="walkthrough-bar-container">
-                            <div class="walkthrough-bar-home" style="width: {p1_w}%;"></div>
-                            <div class="walkthrough-bar-draw" style="width: {p_draw_w}%;"></div>
-                            <div class="walkthrough-bar-away" style="width: {p2_w}%;"></div>
-                        </div>
-                        <div class="walkthrough-prob-container">
-                            <span>Win: {probs[0]:.1%}</span>
-                            <span>Draw: {probs[1]:.1%}</span>
-                            <span>Win: {probs[2]:.1%}</span>
-                        </div>
-                    </div>
-                    """, unsafe_allow_html=True)
-
-                with col_third:
-                    st.markdown("##### 🥉 Third Place Match")
-                    m = details["third_place_match"][0]
-                    t1, t2 = m["team1"], m["team2"]
-                    goals1, goals2 = m["goals1"], m["goals2"]
-                    probs = m["probs"]
-                    winner = m["winner"]
-                    
-                    p1_w = max(5.0, probs[0] * 100.0)
-                    p_draw_w = max(5.0, probs[1] * 100.0)
-                    p2_w = max(5.0, probs[2] * 100.0)
-
-                    is_t1_winner = winner == t1
-                    is_t2_winner = winner == t2
-
-                    t1_class = "walkthrough-team-winner" if is_t1_winner else ""
-                    t2_class = "walkthrough-team-winner" if is_t2_winner else ""
-
-                    badges_html = ""
-                    if m.get("penalty_shootout"):
-                        p1_shootout_pct = m.get("shootout_p1", 0.5)
-                        badges_html = f'<span class="walkthrough-badge walkthrough-badge-pk">Pens ({format_team_name(m["shootout_winner"])} won, {p1_shootout_pct:.0%} Prob)</span>'
-                    elif m.get("extra_time"):
-                        badges_html = f'<span class="walkthrough-badge walkthrough-badge-et">Extra Time</span>'
-
-                    st.markdown(f"""
-                    <div class="walkthrough-match-card walkthrough-winner-card">
-                        <div style="display: flex; justify-content: space-between; align-items: center;">
-                            <div class="walkthrough-team-name {t1_class}" style="flex: 1;">{format_team_name(t1)}</div>
-                            <div class="walkthrough-score" style="width: 80px;">{goals1} - {goals2}</div>
-                            <div class="walkthrough-team-name {t2_class}" style="flex: 1; text-align: right;">{format_team_name(t2)}</div>
-                        </div>
-                        <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 4px;">
-                            {badges_html}
-                            <div style="font-size: 0.8rem; color: #94a3b8;">Third Place: <b>{format_team_name(winner)}</b></div>
-                        </div>
-                        <div class="walkthrough-bar-container">
-                            <div class="walkthrough-bar-home" style="width: {p1_w}%;"></div>
-                            <div class="walkthrough-bar-draw" style="width: {p_draw_w}%;"></div>
-                            <div class="walkthrough-bar-away" style="width: {p2_w}%;"></div>
-                        </div>
-                        <div class="walkthrough-prob-container">
-                            <span>Win: {probs[0]:.1%}</span>
-                            <span>Draw: {probs[1]:.1%}</span>
-                            <span>Win: {probs[2]:.1%}</span>
-                        </div>
-                    </div>
-                    """, unsafe_allow_html=True)
+                final_html = knockout_card_html(
+                    details["final_match"][0],
+                    title="World Cup Final",
+                    winner_label="World Champion",
+                    champion_card=True
+                )
+                third_html = knockout_card_html(
+                    details["third_place_match"][0],
+                    title="Third Place Match",
+                    winner_label="Third Place"
+                )
+                render_html(f'<div class="walkthrough-finals-grid">{final_html}{third_html}</div>')
 
             with w_tab4:
                 st.markdown("#### ⏱️ Match-by-Match Tournament Timeline")
@@ -1548,9 +1552,7 @@ with tab7:
                     goals1, goals2 = cur_match["goals1"], cur_match["goals2"]
                     probs = cur_match["probs"]
                     
-                    p1_w = max(5.0, probs[0] * 100.0)
-                    p_draw_w = max(5.0, probs[1] * 100.0)
-                    p2_w = max(5.0, probs[2] * 100.0)
+                    p1_w, p_draw_w, p2_w = get_prob_bar_widths(probs)
                     
                     if st.session_state.walkthrough_match_idx < 72:
                         is_t1_winner = goals1 > goals2
@@ -1577,12 +1579,12 @@ with tab7:
                         
                     st.markdown(f"""
                     <div class="walkthrough-match-card {card_winner_class}">
-                        <div style="display: flex; justify-content: space-between; align-items: center;">
+                        <div class="walkthrough-card-row">
                             <div class="walkthrough-team-name {t1_class}" style="flex: 1;">{format_team_name(t1)}</div>
-                            <div class="walkthrough-score" style="width: 80px; font-size: 1.3rem;">{goals1} - {goals2}</div>
+                            <div class="walkthrough-score" style="font-size: 1.3rem;">{goals1} - {goals2}</div>
                             <div class="walkthrough-team-name {t2_class}" style="flex: 1; text-align: right;">{format_team_name(t2)}</div>
                         </div>
-                        <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 4px;">
+                        <div class="walkthrough-card-meta">
                             {badges_html}
                             <div style="font-size: 0.75rem; color: #94a3b8;">
                                 {"Winner: <b>" + format_team_name(cur_match["winner"]) + "</b>" if st.session_state.walkthrough_match_idx >= 72 else ""}
@@ -1626,7 +1628,7 @@ with tab7:
                             "elo": "Elo"
                         })
                         df_live["Team"] = df_live["Team"].apply(format_team_name)
-                        st.dataframe(df_live.reset_index(drop=True), width=500, height=180)
+                        st.dataframe(df_live.reset_index(drop=True), height=180, **stretch_width_kwargs(st.dataframe))
                     else:
                         # Knockout stage: show qualified teams list
                         stage_name = cur_match["stage"]
@@ -1635,6 +1637,6 @@ with tab7:
                         
                         status_list = get_knockout_stage_status(stage_name, st.session_state.walkthrough_match_idx, all_104_matches, details)
                         df_status = pd.DataFrame(status_list)
-                        st.dataframe(df_status.reset_index(drop=True), width=500, height=350)
+                        st.dataframe(df_status.reset_index(drop=True), height=350, **stretch_width_kwargs(st.dataframe))
     else:
         st.info("💡 Click the button above to run a single World Cup 2026 simulation and view the match-by-match details!")

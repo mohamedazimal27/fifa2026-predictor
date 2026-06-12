@@ -102,8 +102,151 @@ st.markdown("""
         color: #00f2fe !important;
         border-color: #00f2fe !important;
     }
+    
+    /* Interactive Walkthrough styling */
+    .walkthrough-match-card {
+        background: rgba(255, 255, 255, 0.02);
+        border: 1px solid rgba(255, 255, 255, 0.05);
+        border-radius: 10px;
+        padding: 16px;
+        margin-bottom: 12px;
+        transition: all 0.3s ease;
+    }
+    .walkthrough-match-card:hover {
+        border-color: rgba(0, 242, 254, 0.3);
+        background: rgba(255, 255, 255, 0.04);
+        transform: translateY(-2px);
+    }
+    .walkthrough-winner-card {
+        border: 1px solid rgba(0, 242, 254, 0.3);
+        background: rgba(0, 242, 254, 0.03);
+    }
+    .walkthrough-winner-card:hover {
+        border-color: rgba(0, 242, 254, 0.6);
+        background: rgba(0, 242, 254, 0.05);
+    }
+    .walkthrough-team-name {
+        font-weight: 600;
+        font-size: 1.05rem;
+    }
+    .walkthrough-team-winner {
+        color: #00f2fe !important;
+    }
+    .walkthrough-score {
+        font-size: 1.3rem;
+        font-weight: 800;
+        text-align: center;
+        color: #ffffff;
+    }
+    .walkthrough-prob-container {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-top: 8px;
+        font-size: 0.8rem;
+        color: #94a3b8;
+    }
+    .walkthrough-bar-container {
+        height: 6px;
+        border-radius: 3px;
+        display: flex;
+        overflow: hidden;
+        margin-top: 8px;
+        background-color: rgba(255, 255, 255, 0.1);
+    }
+    .walkthrough-bar-home {
+        background: linear-gradient(90deg, #3b82f6, #60a5fa);
+    }
+    .walkthrough-bar-draw {
+        background-color: rgba(255, 255, 255, 0.2);
+    }
+    .walkthrough-bar-away {
+        background: linear-gradient(90deg, #f87171, #ef4444);
+    }
+    .walkthrough-badge {
+        font-size: 0.75rem;
+        padding: 2px 6px;
+        border-radius: 4px;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+    }
+    .walkthrough-badge-et {
+        background-color: rgba(234, 179, 8, 0.15);
+        color: #eab308;
+        border: 1px solid rgba(234, 179, 8, 0.3);
+    }
+    .walkthrough-badge-pk {
+        background-color: rgba(239, 68, 68, 0.15);
+        color: #ef4444;
+        border: 1px solid rgba(239, 68, 68, 0.3);
+    }
 </style>
 """, unsafe_allow_html=True)
+
+TEAM_FLAGS = {
+    'Mexico': '🇲🇽',
+    'South_Africa': '🇿🇦',
+    'South_Korea': '🇰🇷',
+    'Czechia': '🇨🇿',
+    'Canada': '🇨🇦',
+    'Bosnia_and_Herzegovina': '🇧🇦',
+    'Qatar': '🇶🇦',
+    'Switzerland': '🇨🇭',
+    'Brazil': '🇧🇷',
+    'Morocco': '🇲🇦',
+    'Haiti': '🇭🇹',
+    'Scotland': '🏴󠁧󠁢󠁳󠁣󠁴󠁿',
+    'United_States': '🇺🇸',
+    'Paraguay': '🇵🇾',
+    'Australia': '🇦🇺',
+    'Turkey': '🇹🇷',
+    'Germany': '🇩🇪',
+    'Curacao': '🇨🇼',
+    'Ivory_Coast': '🇨🇮',
+    'Ecuador': '🇪🇨',
+    'Netherlands': '🇳🇱',
+    'Japan': '🇯🇵',
+    'Sweden': '🇸🇪',
+    'Tunisia': '🇹🇳',
+    'Belgium': '🇧🇪',
+    'Egypt': '🇪🇬',
+    'Iran': '🇮🇷',
+    'New_Zealand': '🇳🇿',
+    'Spain': '🇪🇸',
+    'Cape_Verde': '🇨🇻',
+    'Saudi_Arabia': '🇸🇦',
+    'Uruguay': '🇺🇾',
+    'France': '🇫🇷',
+    'Senegal': '🇸🇳',
+    'Iraq': '🇮🇶',
+    'Norway': '🇳🇴',
+    'Argentina': '🇦🇷',
+    'Algeria': '🇩🇿',
+    'Austria': '🇦🇹',
+    'Jordan': '🇯🇴',
+    'Portugal': '🇵🇹',
+    'DR_Congo': '🇨🇩',
+    'Uzbekistan': '🇺🇿',
+    'Colombia': '🇨🇴',
+    'England': '🏴󠁧󠁢󠁥󠁮󠁧󠁿',
+    'Croatia': '🇭🇷',
+    'Ghana': '🇬🇭',
+    'Panama': '🇵🇦'
+}
+
+def format_team_name(team_name: str, include_flag: bool = True) -> str:
+    """Formats team name by replacing underscores and optionally prefixing with emoji flags."""
+    if not team_name:
+        return ""
+    # Normalize team name key just in case (e.g. replacing space back to underscore if input is formatted)
+    key = team_name.replace(' ', '_')
+    display_name = key.replace('_', ' ')
+    if not include_flag:
+        return display_name
+    flag = TEAM_FLAGS.get(key, '🏳️')
+    return f"{flag} {display_name}"
+
 
 COACH_STATS = {
     "Lionel Scaloni": {"win_rate": 0.68, "intl_win_rate": 0.68, "world_cups": 1, "trophies": ["World Cup 2022", "Copa América 2021, 2024"]},
@@ -176,7 +319,7 @@ st.sidebar.markdown("---")
 st.sidebar.markdown("<h3 style='color: #00f2fe; font-weight:700;'>🏥 Injury Shock System</h3>", unsafe_allow_html=True)
 st.sidebar.write("Simulate rating drops due to key player injuries.")
 
-shock_team = st.sidebar.selectbox("Select Team to Injure", all_teams, key="shock_team_select")
+shock_team = st.sidebar.selectbox("Select Team to Injure", all_teams, key="shock_team_select", format_func=format_team_name)
 shock_tier_label = st.sidebar.selectbox(
     "Player Importance",
     ["Key Player (-30 Elo, -0.05 Squad Quality)", "World Class (-50 Elo, -0.10 Squad Quality)", "Indispensable (-80 Elo, -0.15 Squad Quality)"],
@@ -200,7 +343,7 @@ if st.session_state.injury_shocks:
     to_remove = []
     for team, tier in list(st.session_state.injury_shocks.items()):
         col_name, col_btn = st.sidebar.columns([3, 1])
-        col_name.write(f"⚠️ {team}: {tier.replace('_', ' ').title()}")
+        col_name.write(f"⚠️ {format_team_name(team)}: {tier.replace('_', ' ').title()}")
         if col_btn.button("❌", key=f"remove_shock_{team}"):
             to_remove.append(team)
             
@@ -228,13 +371,14 @@ st.markdown("<div class='header-title'>FIFA 2026 World Cup Predictor</div>", uns
 st.markdown("<div class='header-subtitle'>Sports Analytics & Machine Learning Tournament Simulation Dashboard</div>", unsafe_allow_html=True)
 
 # Define Tabs
-tab1, tab2, tab3, tab4, tab5, tab6 = st.tabs([
+tab1, tab2, tab3, tab4, tab5, tab6, tab7 = st.tabs([
     "📊 Tournament Overview", 
     "⚔️ Match Predictor", 
     "🔍 Team Analysis", 
     "🎮 Scenario Simulator", 
     "⏪ Historical Replay",
-    "⚙️ Model Transparency"
+    "⚙️ Model Transparency",
+    "🧭 Interactive Walkthrough"
 ])
 
 # ----------------- TAB 1: TOURNAMENT OVERVIEW -----------------
@@ -306,7 +450,7 @@ with tab1:
             tf = sim.team_features[team]
             coach_info = sim.lookup_system.lookup(team, "2026-06-11")
             dna_rows.append({
-                "Team": team.replace("_", " "),
+                "Team": format_team_name(team),
                 "Starting Elo": int(tf['elo']),
                 "Squad Quality Score": f"{tf['squad_quality']:.2f}",
                 "Club Cohesion": f"{tf['cohesion']:.2%}",
@@ -329,7 +473,7 @@ with tab2:
     
     with col_t1:
         st.markdown("<div class='glass-card'>", unsafe_allow_html=True)
-        team_a = st.selectbox("Select Team A", all_teams, index=all_teams.index("Brazil"))
+        team_a = st.selectbox("Select Team A", all_teams, index=all_teams.index("Brazil"), format_func=format_team_name)
         
         tf_a = sim.team_features[team_a]
         st.metric("Elo Rating", int(tf_a['elo']))
@@ -350,7 +494,7 @@ with tab2:
         
     with col_t2:
         st.markdown("<div class='glass-card'>", unsafe_allow_html=True)
-        team_b = st.selectbox("Select Team B", all_teams, index=all_teams.index("Argentina"))
+        team_b = st.selectbox("Select Team B", all_teams, index=all_teams.index("Argentina"), format_func=format_team_name)
         
         tf_b = sim.team_features[team_b]
         st.metric("Elo Rating", int(tf_b['elo']))
@@ -421,9 +565,9 @@ with tab2:
         
         st.markdown("<div class='glass-card'><h3>🔮 Calibrated Outcome Probabilities (with 95% Confidence Intervals)</h3>", unsafe_allow_html=True)
         col_p1, col_p2, col_p3 = st.columns(3)
-        col_p1.metric(f"{team_a.replace('_', ' ')} Win", f"{means[0]:.1%}", help=f"95% CI: [{ci_low[0]:.1%} - {ci_high[0]:.1%}]")
+        col_p1.metric(f"{format_team_name(team_a)} Win", f"{means[0]:.1%}", help=f"95% CI: [{ci_low[0]:.1%} - {ci_high[0]:.1%}]")
         col_p2.metric("Draw", f"{means[1]:.1%}", help=f"95% CI: [{ci_low[1]:.1%} - {ci_high[1]:.1%}]")
-        col_p3.metric(f"{team_b.replace('_', ' ')} Win", f"{means[2]:.1%}", help=f"95% CI: [{ci_low[2]:.1%} - {ci_high[2]:.1%}]")
+        col_p3.metric(f"{format_team_name(team_b)} Win", f"{means[2]:.1%}", help=f"95% CI: [{ci_low[2]:.1%} - {ci_high[2]:.1%}]")
         
         # Scoreline simulation
         sim_scores = []
@@ -438,13 +582,13 @@ with tab2:
         top_score = max(score_counts.items(), key=lambda x: x[1])[0]
         top_score_pct = score_counts[top_score] / 5000
         
-        st.markdown(f"<h4>Most Likely Scoreline: <span style='color:#00f2fe;'>{team_a.replace('_', ' ')} {top_score[0]} - {top_score[1]} {team_b.replace('_', ' ')}</span> ({top_score_pct:.1%} probability)</h4>", unsafe_allow_html=True)
+        st.markdown(f"<h4>Most Likely Scoreline: <span style='color:#00f2fe;'>{format_team_name(team_a)} {top_score[0]} - {top_score[1]} {format_team_name(team_b)}</span> ({top_score_pct:.1%} probability)</h4>", unsafe_allow_html=True)
         st.markdown("</div>", unsafe_allow_html=True)
 
 # ----------------- TAB 3: TEAM ANALYSIS -----------------
 with tab3:
     st.markdown("### 🔍 Team Strength & Coach Profile")
-    selected_team = st.selectbox("Select a Team for Analysis", all_teams)
+    selected_team = st.selectbox("Select a Team for Analysis", all_teams, format_func=format_team_name)
     
     tf_team = sim.team_features[selected_team]
     coach_info = sim.lookup_system.lookup(selected_team, "2026-06-11")
@@ -487,7 +631,7 @@ with tab4:
     st.markdown("### 🎮 Custom Scenario Simulator")
     st.write("Edit a team's core attributes in memory and run a quick simulation to see how it alters their tournament path.")
     
-    scen_team = st.selectbox("Select Team to Modify", all_teams, key="scen_t")
+    scen_team = st.selectbox("Select Team to Modify", all_teams, key="scen_t", format_func=format_team_name)
     
     col_sc1, col_sc2 = st.columns(2)
     
@@ -833,3 +977,641 @@ with tab6:
         else:
             st.write("Feature drift report not found.")
         st.markdown("</div>", unsafe_allow_html=True)
+def get_live_group_standings(group_letter, cur_idx, all_104_matches, starting_elos):
+    # Get all teams in this group
+    teams = GROUPS_2026[group_letter]
+    standings = {t: {'points': 0, 'gd': 0, 'gs': 0, 'elo': starting_elos.get(t, 1600.0), 'team': t} for t in teams}
+    
+    played_matches = []
+    # Filter matches in all_104_matches up to cur_idx that belong to this group
+    for i in range(min(cur_idx + 1, 72)):
+        m = all_104_matches[i]
+        if m.get("group") == group_letter:
+            t1, t2 = m["team1"], m["team2"]
+            g1, g2 = m["goals1"], m["goals2"]
+            
+            if g1 > g2:
+                standings[t1]['points'] += 3
+            elif g2 > g1:
+                standings[t2]['points'] += 3
+            else:
+                standings[t1]['points'] += 1
+                standings[t2]['points'] += 1
+                
+            standings[t1]['gd'] += (g1 - g2)
+            standings[t1]['gs'] += g1
+            standings[t2]['gd'] += (g2 - g1)
+            standings[t2]['gs'] += g2
+            
+            played_matches.append((t1, t2, g1, g2))
+            
+    # Sort standings using compare_teams
+    import functools
+    from src.simulator import compare_teams
+    sorted_teams = sorted(
+        standings.values(),
+        key=functools.cmp_to_key(lambda x, y: compare_teams(x, y, played_matches)),
+        reverse=True
+    )
+    return sorted_teams
+
+def get_knockout_stage_status(stage_name, cur_idx, all_104_matches, details):
+    # Determine the list of teams in this stage
+    if stage_name == "Round of 32":
+        teams = details["r32_teams"]
+    elif stage_name == "Round of 16":
+        teams = details["r16_teams"]
+    elif stage_name == "Quarter-finals":
+        teams = details["qf_teams"]
+    elif stage_name == "Semi-finals":
+        teams = details["sf_teams"]
+    else:  # Third Place Match or Final
+        teams = details["sf_teams"]
+        
+    status_dict = {t: "⏳ Pending" for t in teams}
+    
+    # Check matches in this stage up to cur_idx
+    for i in range(72, cur_idx + 1):
+        m = all_104_matches[i]
+        if m.get("stage") == stage_name:
+            t1, t2 = m["team1"], m["team2"]
+            winner = m["winner"]
+            
+            if t1 in status_dict:
+                status_dict[t1] = "✅ Advanced" if winner == t1 else "❌ Eliminated"
+            if t2 in status_dict:
+                status_dict[t2] = "✅ Advanced" if winner == t2 else "❌ Eliminated"
+                
+    # If it is Final or Third Place Match, let's customize
+    if stage_name in ["Third Place Match", "Final"]:
+        # Find who won/lost the Final and Third Place Match
+        for i in range(72, cur_idx + 1):
+            m = all_104_matches[i]
+            if m.get("stage") == "Third Place Match":
+                winner = m["winner"]
+                loser = m["team1"] if winner == m["team2"] else m["team2"]
+                if winner in status_dict:
+                    status_dict[winner] = "🥉 3rd Place"
+                if loser in status_dict:
+                    status_dict[loser] = "4th Place"
+            elif m.get("stage") == "Final":
+                winner = m["winner"]
+                loser = m["team1"] if winner == m["team2"] else m["team2"]
+                if winner in status_dict:
+                    status_dict[winner] = "🏆 Champion"
+                if loser in status_dict:
+                    status_dict[loser] = "🥈 Runner-up"
+                    
+    return [{"Team": format_team_name(t), "Status": status} for t, status in status_dict.items()]
+
+# ----------------- TAB 7: INTERACTIVE WALKTHROUGH -----------------
+with tab7:
+    st.markdown("### 🧭 Interactive Tournament Walkthrough")
+    st.write(
+        "Run a single, complete simulation of the FIFA 2026 World Cup and explore "
+        "every match from the opening group fixtures to the final whistle."
+    )
+
+    if 'single_walkthrough' not in st.session_state:
+        st.session_state.single_walkthrough = None
+
+    col_btn, col_info = st.columns([1.5, 3])
+    with col_btn:
+        if st.button("🎲 Generate Single Tournament Walkthrough", key="gen_single_walk"):
+            with st.spinner("Simulating tournament..."):
+                st.session_state.single_walkthrough = sim.simulate_tournament(track_details=True)
+
+    if st.session_state.single_walkthrough:
+        res = st.session_state.single_walkthrough
+        details = res["details"]
+
+        # Display champion card
+        st.markdown(f"""
+        <div class="glass-card" style="text-align: center; border-color: rgba(0, 242, 254, 0.4); background: rgba(0, 242, 254, 0.05); padding: 30px;">
+            <h2 style="margin: 0; color: #00f2fe; font-size: 2.5rem;">🏆 CHAMPION: {format_team_name(res['champion'])} 🏆</h2>
+            <p style="margin: 10px 0 0 0; color: #94a3b8; font-size: 1.2rem;">
+                Runner-up: <b>{format_team_name(res['runner_up'])}</b> | Third Place: <b>{format_team_name(res['third_place'])}</b>
+            </p>
+        </div>
+        """, unsafe_allow_html=True)
+
+        # Stage Tabs
+        w_tab1, w_tab2, w_tab3, w_tab4 = st.tabs([
+            "📅 Group Stage",
+            "⚖️ Third Place Routing",
+            "⚔️ Knockout Bracket",
+            "⏱️ Match-by-Match Timeline"
+        ])
+
+        with w_tab1:
+            st.markdown("#### Group Stage Standings & Fixtures")
+            
+            # Select Group
+            group_letters = list(details["group_matches"].keys())
+            selected_group = st.selectbox("Select Group to Inspect", group_letters, format_func=lambda x: f"Group {x}")
+
+            col_matches, col_standings = st.columns([1.5, 1.2])
+
+            with col_matches:
+                st.markdown(f"##### Group {selected_group} Fixtures")
+                for m in details["group_matches"][selected_group]:
+                    t1, t2 = m["team1"], m["team2"]
+                    goals1, goals2 = m["goals1"], m["goals2"]
+                    probs = m["probs"]  # [Home Win, Draw, Away Win]
+                    
+                    # Compute prob bar widths
+                    p1_w = max(5.0, probs[0] * 100.0)
+                    p_draw_w = max(5.0, probs[1] * 100.0)
+                    p2_w = max(5.0, probs[2] * 100.0)
+                    
+                    is_t1_winner = goals1 > goals2
+                    is_t2_winner = goals2 > goals1
+                    
+                    t1_class = "walkthrough-team-winner" if is_t1_winner else ""
+                    t2_class = "walkthrough-team-winner" if is_t2_winner else ""
+                    card_winner_class = "walkthrough-winner-card" if (is_t1_winner or is_t2_winner) else ""
+
+                    st.markdown(f"""
+                    <div class="walkthrough-match-card {card_winner_class}">
+                        <div style="display: flex; justify-content: space-between; align-items: center;">
+                            <div class="walkthrough-team-name {t1_class}" style="flex: 1;">{format_team_name(t1)}</div>
+                            <div class="walkthrough-score" style="width: 80px;">{goals1} - {goals2}</div>
+                            <div class="walkthrough-team-name {t2_class}" style="flex: 1; text-align: right;">{format_team_name(t2)}</div>
+                        </div>
+                        <div class="walkthrough-bar-container">
+                            <div class="walkthrough-bar-home" style="width: {p1_w}%;"></div>
+                            <div class="walkthrough-bar-draw" style="width: {p_draw_w}%;"></div>
+                            <div class="walkthrough-bar-away" style="width: {p2_w}%;"></div>
+                        </div>
+                        <div class="walkthrough-prob-container">
+                            <span>Win: {probs[0]:.1%}</span>
+                            <span>Draw: {probs[1]:.1%}</span>
+                            <span>Win: {probs[2]:.1%}</span>
+                        </div>
+                    </div>
+                    """, unsafe_allow_html=True)
+
+            with col_standings:
+                st.markdown(f"##### Group {selected_group} Standings")
+                standings_data = details["group_standings_clean"][selected_group]
+                df_standings = pd.DataFrame(standings_data)
+                
+                # Format/rename columns for display
+                df_standings = df_standings.rename(columns={
+                    "team": "Team",
+                    "points": "Pts",
+                    "gd": "GD",
+                    "gs": "GS",
+                    "elo": "Elo"
+                })
+                df_standings["Team"] = df_standings["Team"].apply(format_team_name)
+                
+                # Render using table
+                st.dataframe(df_standings.reset_index(drop=True), width=500, height=180)
+
+        with w_tab2:
+            st.markdown("#### ⚖️ Best 3rd-Place Teams & Routing Logic")
+            st.write(
+                "Under the FIFA 2026 format, the 12 third-placed teams are ranked. "
+                "The top 8 qualify for the Round of 32. Their matchups depend on "
+                "which combination of groups produced the qualified teams."
+            )
+
+            routing_data = details["third_place_routing"]
+            
+            # Left: Standings of 3rd place teams
+            # Right: Routing targets
+            col_thirds, col_routes = st.columns([1.3, 1.2])
+
+            with col_thirds:
+                st.markdown("##### 🥉 Third-Placed Team Rankings")
+                
+                rows_thirds = []
+                best_8_names = set(routing_data["best_eight_thirds"])
+                for rank, t_info in enumerate(routing_data["all_third_placed"], 1):
+                    team_name = t_info["team"]
+                    status = "✅ Qualified" if team_name in best_8_names else "❌ Eliminated"
+                    rows_thirds.append({
+                        "Rank": rank,
+                        "Team": format_team_name(team_name),
+                        "Group": t_info["group"],
+                        "Pts": t_info["points"],
+                        "GD": t_info["gd"],
+                        "GS": t_info["gs"],
+                        "Elo": int(t_info["elo"]),
+                        "Status": status
+                    })
+                st.table(pd.DataFrame(rows_thirds))
+
+            with col_routes:
+                st.markdown("##### 🔗 Round of 32 Opponents Assigned")
+                st.write("The 8 qualified teams are assigned to group winners according to the FIFA routing table:")
+                
+                rows_routes = []
+                for winner_slot, third_team in routing_data["routing"].items():
+                    rows_routes.append({
+                        "Group Winner Slot": f"Winner Group {winner_slot}",
+                        "Opponent (3rd Placed)": format_team_name(third_team['team'])
+                    })
+                st.table(pd.DataFrame(rows_routes))
+
+        with w_tab3:
+            st.markdown("#### ⚔️ Knockout Stage Progression")
+            
+            # Tabs for knockout rounds
+            k_tab1, k_tab2, k_tab3, k_tab4, k_tab5 = st.tabs([
+                "Round of 32",
+                "Round of 16",
+                "Quarter-finals",
+                "Semi-finals",
+                "Finals"
+            ])
+
+            def render_knockout_matches(matches_list):
+                # Render matches in 2 columns
+                cols = st.columns(2)
+                for idx, m in enumerate(matches_list):
+                    t1, t2 = m["team1"], m["team2"]
+                    goals1, goals2 = m["goals1"], m["goals2"]
+                    probs = m["probs"]  # [Home, Draw, Away]
+                    winner = m["winner"]
+                    
+                    p1_w = max(5.0, probs[0] * 100.0)
+                    p_draw_w = max(5.0, probs[1] * 100.0)
+                    p2_w = max(5.0, probs[2] * 100.0)
+
+                    is_t1_winner = winner == t1
+                    is_t2_winner = winner == t2
+
+                    t1_class = "walkthrough-team-winner" if is_t1_winner else ""
+                    t2_class = "walkthrough-team-winner" if is_t2_winner else ""
+                    card_winner_class = "walkthrough-winner-card"
+
+                    badges_html = ""
+                    if m.get("penalty_shootout"):
+                        p1_shootout_pct = m.get("shootout_p1", 0.5)
+                        badges_html = f'<span class="walkthrough-badge walkthrough-badge-pk">Pens ({format_team_name(m["shootout_winner"])} won, {p1_shootout_pct:.0%} Prob)</span>'
+                    elif m.get("extra_time"):
+                        badges_html = f'<span class="walkthrough-badge walkthrough-badge-et">Extra Time</span>'
+
+                    # Check if fatigue exists
+                    fat_info = ""
+                    if m.get("fatigue1", 0) > 0 or m.get("fatigue2", 0) > 0:
+                        fat_info = f'<div style="font-size:0.75rem; color:#94a3b8; margin-top:4px;">Fatigue: {format_team_name(t1)} (F:{m.get("fatigue1", 0)}) vs {format_team_name(t2)} (F:{m.get("fatigue2", 0)})</div>'
+
+                    cols[idx % 2].markdown(f"""
+                    <div class="walkthrough-match-card {card_winner_class}">
+                        <div style="display: flex; justify-content: space-between; align-items: center;">
+                            <div class="walkthrough-team-name {t1_class}" style="flex: 1;">{format_team_name(t1)}</div>
+                            <div class="walkthrough-score" style="width: 80px;">{goals1} - {goals2}</div>
+                            <div class="walkthrough-team-name {t2_class}" style="flex: 1; text-align: right;">{format_team_name(t2)}</div>
+                        </div>
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 4px;">
+                            {badges_html}
+                            <div style="font-size: 0.75rem; color: #94a3b8;">Winner: <b>{format_team_name(winner)}</b></div>
+                        </div>
+                        {fat_info}
+                        <div class="walkthrough-bar-container">
+                            <div class="walkthrough-bar-home" style="width: {p1_w}%;"></div>
+                            <div class="walkthrough-bar-draw" style="width: {p_draw_w}%;"></div>
+                            <div class="walkthrough-bar-away" style="width: {p2_w}%;"></div>
+                        </div>
+                        <div class="walkthrough-prob-container">
+                            <span>Win: {probs[0]:.1%}</span>
+                            <span>Draw: {probs[1]:.1%}</span>
+                            <span>Win: {probs[2]:.1%}</span>
+                        </div>
+                    </div>
+                    """, unsafe_allow_html=True)
+
+            with k_tab1:
+                st.markdown("##### Round of 32 Matches")
+                render_knockout_matches(details["r32_matches"])
+
+            with k_tab2:
+                st.markdown("##### Round of 16 Matches")
+                render_knockout_matches(details["r16_matches"])
+
+            with k_tab3:
+                st.markdown("##### Quarter-final Matches")
+                render_knockout_matches(details["qf_matches"])
+
+            with k_tab4:
+                st.markdown("##### Semi-final Matches")
+                render_knockout_matches(details["sf_matches"])
+
+            with k_tab5:
+                col_final, col_third = st.columns(2)
+                with col_final:
+                    st.markdown("##### 🏆 World Cup Final")
+                    m = details["final_match"][0]
+                    t1, t2 = m["team1"], m["team2"]
+                    goals1, goals2 = m["goals1"], m["goals2"]
+                    probs = m["probs"]
+                    winner = m["winner"]
+                    
+                    p1_w = max(5.0, probs[0] * 100.0)
+                    p_draw_w = max(5.0, probs[1] * 100.0)
+                    p2_w = max(5.0, probs[2] * 100.0)
+
+                    is_t1_winner = winner == t1
+                    is_t2_winner = winner == t2
+
+                    t1_class = "walkthrough-team-winner" if is_t1_winner else ""
+                    t2_class = "walkthrough-team-winner" if is_t2_winner else ""
+
+                    badges_html = ""
+                    if m.get("penalty_shootout"):
+                        p1_shootout_pct = m.get("shootout_p1", 0.5)
+                        badges_html = f'<span class="walkthrough-badge walkthrough-badge-pk">Pens ({format_team_name(m["shootout_winner"])} won, {p1_shootout_pct:.0%} Prob)</span>'
+                    elif m.get("extra_time"):
+                        badges_html = f'<span class="walkthrough-badge walkthrough-badge-et">Extra Time</span>'
+
+                    st.markdown(f"""
+                    <div class="walkthrough-match-card walkthrough-winner-card" style="border-width: 2px;">
+                        <div style="display: flex; justify-content: space-between; align-items: center;">
+                            <div class="walkthrough-team-name {t1_class}" style="flex: 1;">{format_team_name(t1)}</div>
+                            <div class="walkthrough-score" style="width: 80px; font-size: 1.5rem;">{goals1} - {goals2}</div>
+                            <div class="walkthrough-team-name {t2_class}" style="flex: 1; text-align: right;">{format_team_name(t2)}</div>
+                        </div>
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 6px;">
+                            {badges_html}
+                            <div style="font-size: 0.8rem; color: #00f2fe; font-weight: bold;">World Champion: {format_team_name(winner)}</div>
+                        </div>
+                        <div class="walkthrough-bar-container">
+                            <div class="walkthrough-bar-home" style="width: {p1_w}%;"></div>
+                            <div class="walkthrough-bar-draw" style="width: {p_draw_w}%;"></div>
+                            <div class="walkthrough-bar-away" style="width: {p2_w}%;"></div>
+                        </div>
+                        <div class="walkthrough-prob-container">
+                            <span>Win: {probs[0]:.1%}</span>
+                            <span>Draw: {probs[1]:.1%}</span>
+                            <span>Win: {probs[2]:.1%}</span>
+                        </div>
+                    </div>
+                    """, unsafe_allow_html=True)
+
+                with col_third:
+                    st.markdown("##### 🥉 Third Place Match")
+                    m = details["third_place_match"][0]
+                    t1, t2 = m["team1"], m["team2"]
+                    goals1, goals2 = m["goals1"], m["goals2"]
+                    probs = m["probs"]
+                    winner = m["winner"]
+                    
+                    p1_w = max(5.0, probs[0] * 100.0)
+                    p_draw_w = max(5.0, probs[1] * 100.0)
+                    p2_w = max(5.0, probs[2] * 100.0)
+
+                    is_t1_winner = winner == t1
+                    is_t2_winner = winner == t2
+
+                    t1_class = "walkthrough-team-winner" if is_t1_winner else ""
+                    t2_class = "walkthrough-team-winner" if is_t2_winner else ""
+
+                    badges_html = ""
+                    if m.get("penalty_shootout"):
+                        p1_shootout_pct = m.get("shootout_p1", 0.5)
+                        badges_html = f'<span class="walkthrough-badge walkthrough-badge-pk">Pens ({format_team_name(m["shootout_winner"])} won, {p1_shootout_pct:.0%} Prob)</span>'
+                    elif m.get("extra_time"):
+                        badges_html = f'<span class="walkthrough-badge walkthrough-badge-et">Extra Time</span>'
+
+                    st.markdown(f"""
+                    <div class="walkthrough-match-card walkthrough-winner-card">
+                        <div style="display: flex; justify-content: space-between; align-items: center;">
+                            <div class="walkthrough-team-name {t1_class}" style="flex: 1;">{format_team_name(t1)}</div>
+                            <div class="walkthrough-score" style="width: 80px;">{goals1} - {goals2}</div>
+                            <div class="walkthrough-team-name {t2_class}" style="flex: 1; text-align: right;">{format_team_name(t2)}</div>
+                        </div>
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 4px;">
+                            {badges_html}
+                            <div style="font-size: 0.8rem; color: #94a3b8;">Third Place: <b>{format_team_name(winner)}</b></div>
+                        </div>
+                        <div class="walkthrough-bar-container">
+                            <div class="walkthrough-bar-home" style="width: {p1_w}%;"></div>
+                            <div class="walkthrough-bar-draw" style="width: {p_draw_w}%;"></div>
+                            <div class="walkthrough-bar-away" style="width: {p2_w}%;"></div>
+                        </div>
+                        <div class="walkthrough-prob-container">
+                            <span>Win: {probs[0]:.1%}</span>
+                            <span>Draw: {probs[1]:.1%}</span>
+                            <span>Win: {probs[2]:.1%}</span>
+                        </div>
+                    </div>
+                    """, unsafe_allow_html=True)
+
+            with w_tab4:
+                st.markdown("#### ⏱️ Match-by-Match Tournament Timeline")
+                st.write(
+                    "Step through all 104 matches of the simulated World Cup in chronological order. "
+                    "Observe how group standings update live, and follow the exact progression of qualified teams through the knockouts."
+                )
+                
+                # Construct the flat chronological list of 104 matches
+                group_letters = list("ABCDEFGHIJKL")
+                group_matches = details["group_matches"]
+                
+                chronological_group_matches = []
+                for g in group_letters:
+                    m0 = group_matches[g][0].copy()
+                    m0["group"] = g
+                    m0["matchday"] = 1
+                    m0["match_idx_within_group"] = 0
+                    m1 = group_matches[g][1].copy()
+                    m1["group"] = g
+                    m1["matchday"] = 1
+                    m1["match_idx_within_group"] = 1
+                    chronological_group_matches.extend([m0, m1])
+                    
+                for g in group_letters:
+                    m2 = group_matches[g][2].copy()
+                    m2["group"] = g
+                    m2["matchday"] = 2
+                    m2["match_idx_within_group"] = 2
+                    m3 = group_matches[g][3].copy()
+                    m3["group"] = g
+                    m3["matchday"] = 2
+                    m3["match_idx_within_group"] = 3
+                    chronological_group_matches.extend([m2, m3])
+                    
+                for g in group_letters:
+                    m4 = group_matches[g][4].copy()
+                    m4["group"] = g
+                    m4["matchday"] = 3
+                    m4["match_idx_within_group"] = 4
+                    m5 = group_matches[g][5].copy()
+                    m5["group"] = g
+                    m5["matchday"] = 3
+                    m5["match_idx_within_group"] = 5
+                    chronological_group_matches.extend([m4, m5])
+                    
+                knockout_matches = []
+                for m in details["r32_matches"]:
+                    m_copy = m.copy()
+                    m_copy["stage"] = "Round of 32"
+                    knockout_matches.append(m_copy)
+                for m in details["r16_matches"]:
+                    m_copy = m.copy()
+                    m_copy["stage"] = "Round of 16"
+                    knockout_matches.append(m_copy)
+                for m in details["qf_matches"]:
+                    m_copy = m.copy()
+                    m_copy["stage"] = "Quarter-finals"
+                    knockout_matches.append(m_copy)
+                for m in details["sf_matches"]:
+                    m_copy = m.copy()
+                    m_copy["stage"] = "Semi-finals"
+                    knockout_matches.append(m_copy)
+                for m in details["third_place_match"]:
+                    m_copy = m.copy()
+                    m_copy["stage"] = "Third Place Match"
+                    knockout_matches.append(m_copy)
+                for m in details["final_match"]:
+                    m_copy = m.copy()
+                    m_copy["stage"] = "Final"
+                    knockout_matches.append(m_copy)
+                    
+                all_104_matches = chronological_group_matches + knockout_matches
+                
+                # Step navigation buttons
+                if "walkthrough_match_idx" not in st.session_state:
+                    st.session_state.walkthrough_match_idx = 0
+                    
+                col_prev, col_next, col_jump_ko, col_reset = st.columns([1, 1, 1.5, 1])
+                with col_prev:
+                    if st.button("◀ Previous Match", key="btn_prev_match", disabled=(st.session_state.walkthrough_match_idx == 0)):
+                        st.session_state.walkthrough_match_idx = max(0, st.session_state.walkthrough_match_idx - 1)
+                        st.rerun()
+                with col_next:
+                    if st.button("Next Match ▶", key="btn_next_match", disabled=(st.session_state.walkthrough_match_idx == 103)):
+                        st.session_state.walkthrough_match_idx = min(103, st.session_state.walkthrough_match_idx + 1)
+                        st.rerun()
+                with col_jump_ko:
+                    if st.button("⏭ Jump to Knockouts", key="btn_jump_ko", disabled=(st.session_state.walkthrough_match_idx >= 72)):
+                        st.session_state.walkthrough_match_idx = 72
+                        st.rerun()
+                with col_reset:
+                    if st.button("⏮ Back to Start", key="btn_reset_timeline", disabled=(st.session_state.walkthrough_match_idx == 0)):
+                        st.session_state.walkthrough_match_idx = 0
+                        st.rerun()
+                
+                slider_val = st.slider(
+                    "Timeline Position (Match 1 to 104)",
+                    min_value=1,
+                    max_value=104,
+                    value=st.session_state.walkthrough_match_idx + 1,
+                    key="timeline_slider_control",
+                    help="Slide to navigate through the entire tournament in order."
+                )
+                if slider_val - 1 != st.session_state.walkthrough_match_idx:
+                    st.session_state.walkthrough_match_idx = slider_val - 1
+                    st.rerun()
+                    
+                # Current Match Info
+                cur_match = all_104_matches[st.session_state.walkthrough_match_idx]
+                
+                col_left, col_right = st.columns([1.5, 1.2])
+                
+                with col_left:
+                    # Get stage title
+                    if st.session_state.walkthrough_match_idx < 72:
+                        stage_title = f"Group Stage - Group {cur_match['group']} (Matchday {cur_match['matchday']})"
+                    else:
+                        stage_title = f"Knockout Stage - {cur_match['stage']}"
+                        
+                    st.markdown(f"##### 🏟️ Match {st.session_state.walkthrough_match_idx + 1} of 104: {stage_title}")
+                    
+                    t1, t2 = cur_match["team1"], cur_match["team2"]
+                    goals1, goals2 = cur_match["goals1"], cur_match["goals2"]
+                    probs = cur_match["probs"]
+                    
+                    p1_w = max(5.0, probs[0] * 100.0)
+                    p_draw_w = max(5.0, probs[1] * 100.0)
+                    p2_w = max(5.0, probs[2] * 100.0)
+                    
+                    if st.session_state.walkthrough_match_idx < 72:
+                        is_t1_winner = goals1 > goals2
+                        is_t2_winner = goals2 > goals1
+                    else:
+                        winner = cur_match["winner"]
+                        is_t1_winner = winner == t1
+                        is_t2_winner = winner == t2
+                        
+                    t1_class = "walkthrough-team-winner" if is_t1_winner else ""
+                    t2_class = "walkthrough-team-winner" if is_t2_winner else ""
+                    card_winner_class = "walkthrough-winner-card"
+                    
+                    badges_html = ""
+                    if cur_match.get("penalty_shootout"):
+                        p1_shootout_pct = cur_match.get("shootout_p1", 0.5)
+                        badges_html = f'<span class="walkthrough-badge walkthrough-badge-pk">Pens ({format_team_name(cur_match["shootout_winner"])} won, {p1_shootout_pct:.0%} Prob)</span>'
+                    elif cur_match.get("extra_time"):
+                        badges_html = f'<span class="walkthrough-badge walkthrough-badge-et">Extra Time</span>'
+                        
+                    fat_info = ""
+                    if cur_match.get("fatigue1", 0) > 0 or cur_match.get("fatigue2", 0) > 0:
+                        fat_info = f'<div style="font-size:0.75rem; color:#94a3b8; margin-top:4px;">Fatigue: {format_team_name(t1)} (F:{cur_match.get("fatigue1", 0)}) vs {format_team_name(t2)} (F:{cur_match.get("fatigue2", 0)})</div>'
+                        
+                    st.markdown(f"""
+                    <div class="walkthrough-match-card {card_winner_class}">
+                        <div style="display: flex; justify-content: space-between; align-items: center;">
+                            <div class="walkthrough-team-name {t1_class}" style="flex: 1;">{format_team_name(t1)}</div>
+                            <div class="walkthrough-score" style="width: 80px; font-size: 1.3rem;">{goals1} - {goals2}</div>
+                            <div class="walkthrough-team-name {t2_class}" style="flex: 1; text-align: right;">{format_team_name(t2)}</div>
+                        </div>
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 4px;">
+                            {badges_html}
+                            <div style="font-size: 0.75rem; color: #94a3b8;">
+                                {"Winner: <b>" + format_team_name(cur_match["winner"]) + "</b>" if st.session_state.walkthrough_match_idx >= 72 else ""}
+                            </div>
+                        </div>
+                        {fat_info}
+                        <div class="walkthrough-bar-container">
+                            <div class="walkthrough-bar-home" style="width: {p1_w}%;"></div>
+                            <div class="walkthrough-bar-draw" style="width: {p_draw_w}%;"></div>
+                            <div class="walkthrough-bar-away" style="width: {p2_w}%;"></div>
+                        </div>
+                        <div class="walkthrough-prob-container">
+                            <span>Win: {probs[0]:.1%}</span>
+                            <span>Draw: {probs[1]:.1%}</span>
+                            <span>Win: {probs[2]:.1%}</span>
+                        </div>
+                    </div>
+                    """, unsafe_allow_html=True)
+                    
+                    # Render mini match details/stats breakdown
+                    st.markdown("###### Pre-Match Probability Distribution")
+                    st.write(
+                        f"Our model estimated a **{probs[0]:.1%}** chance of a win for {format_team_name(t1)}, "
+                        f"a **{probs[1]:.1%}** chance of a draw, and a **{probs[2]:.1%}** chance of a win for {format_team_name(t2)}."
+                    )
+                    
+                with col_right:
+                    if st.session_state.walkthrough_match_idx < 72:
+                        # Group stage: show live group standings
+                        g_letter = cur_match["group"]
+                        st.markdown(f"##### 📊 Live Standings - Group {g_letter}")
+                        st.write("Calculated live up to and including the current match.")
+                        
+                        live_standings = get_live_group_standings(g_letter, st.session_state.walkthrough_match_idx, all_104_matches, sim.starting_elos)
+                        df_live = pd.DataFrame(live_standings)
+                        df_live = df_live.rename(columns={
+                            "team": "Team",
+                            "points": "Pts",
+                            "gd": "GD",
+                            "gs": "GS",
+                            "elo": "Elo"
+                        })
+                        df_live["Team"] = df_live["Team"].apply(format_team_name)
+                        st.dataframe(df_live.reset_index(drop=True), width=500, height=180)
+                    else:
+                        # Knockout stage: show qualified teams list
+                        stage_name = cur_match["stage"]
+                        st.markdown(f"##### ⚔️ {stage_name} Live Status")
+                        st.write("Real-time progression status of teams in the current stage.")
+                        
+                        status_list = get_knockout_stage_status(stage_name, st.session_state.walkthrough_match_idx, all_104_matches, details)
+                        df_status = pd.DataFrame(status_list)
+                        st.dataframe(df_status.reset_index(drop=True), width=500, height=350)
+    else:
+        st.info("💡 Click the button above to run a single World Cup 2026 simulation and view the match-by-match details!")

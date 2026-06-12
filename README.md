@@ -97,15 +97,16 @@ The simulation and predictor support an interactive **Injury Shock System** to s
 ---
 
 ## 🖥️ Streamlit Interactive Dashboard
-
-The dashboard consists of six interactive tabs:
-
+ 
+The dashboard consists of seven interactive tabs:
+ 
 1.  **🏆 Tournament Overview**: Displays Monte Carlo simulation results after 1,000 to 10,000 iterations with 95% Confidence Intervals. Features Plotly charts for championship contenders, bracket progression probabilities, and Champion DNA overlays.
 2.  **⚔️ Match Predictor**: A head-to-head calculator that outputs calibrated win/draw/loss probabilities with 95% Confidence Intervals for any two teams, allowing manual configuration of venue, host advantages, and fatigue.
 3.  **🔍 Team Analysis**: Explores detailed team profiles, including active coach details, squad quality indexes, and tournament metrics.
 4.  **🎮 Scenario Simulator**: A sandbox tab allowing users to modify a team's Elo, squad quality, or coach status in memory to see how it affects simulation outcomes with Before vs. After confidence interval comparisons.
 5.  **⏪ Historical Replay**: Replays the 2018 and 2022 World Cups, comparing the model's calibrated predictions side-by-side with actual results and displaying overall log loss and accuracy metrics.
 6.  **⚙️ Model Transparency**: Displays Platt Scaling calibration curves (Reliability Diagrams), validation log loss metrics, feature importance, and KS-test feature drift analyses.
+7.  **🧭 Interactive Walkthrough**: Runs a single, complete simulation of the expanded FIFA 2026 tournament structure, letting users browse matches and standings group-by-group, trace third-place routing logic, and inspect detailed knockout stats (with penalty shootouts, extra time, and accumulated fatigue).
 
 ### 📸 Dashboard Screenshots
 
@@ -114,6 +115,8 @@ The dashboard consists of six interactive tabs:
 | ![Tournament Overview](assets/dashboard_overview.png) | ![Calibration Curve](assets/calibration_diagnostics.png) |
 | **🎮 Scenario Simulator (Before/After CIs)** | **⏪ Historical Tournament Replay** |
 | ![Scenario Simulator](assets/scenario_simulator.png) | ![Historical Replay](assets/historical_replay.png) |
+| **🧭 Interactive Tournament Walkthrough** | |
+| ![Interactive Walkthrough](assets/walkthrough_dashboard.png) | |
 
 ---
 

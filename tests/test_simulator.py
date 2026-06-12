@@ -97,3 +97,104 @@ def test_compare_teams_anti_symmetry(a, b, group_matches):
         assert res_ba > 0
     else:
         assert res_ba == 0
+
+
+def test_tournament_simulator_detail_tracking():
+    # Run simulation with detail tracking
+    res = sim.simulate_tournament(track_details=True)
+    
+    # Check that the standard keys exist
+    assert res["champion"] in sim.starting_elos
+    assert res["runner_up"] in sim.starting_elos
+    assert res["third_place"] in sim.starting_elos
+    
+    # Check that 'details' key exists and has the correct keys
+    assert "details" in res
+    details = res["details"]
+    
+    expected_keys = [
+        "group_matches",
+        "group_standings_clean",
+        "third_place_routing",
+        "r32_matches",
+        "r16_matches",
+        "qf_matches",
+        "sf_matches",
+        "third_place_match",
+        "final_match"
+    ]
+    for key in expected_keys:
+        assert key in details
+        
+    # Check group stage match count (12 groups * 6 matches = 72)
+    group_matches = details["group_matches"]
+    assert len(group_matches) == 12
+    total_group_matches = sum(len(matches) for matches in group_matches.values())
+    assert total_group_matches == 72
+    
+    # Check group standings clean count (12 groups * 4 teams = 48)
+    standings_clean = details["group_standings_clean"]
+    assert len(standings_clean) == 12
+    for group, teams in standings_clean.items():
+        assert len(teams) == 4
+        
+    # Check third place routing
+    tp_routing = details["third_place_routing"]
+    assert "all_third_placed" in tp_routing
+    assert len(tp_routing["all_third_placed"]) == 12
+    assert "best_eight_thirds" in tp_routing
+    assert len(tp_routing["best_eight_thirds"]) == 8
+    assert "routing" in tp_routing
+    assert len(tp_routing["routing"]) == 8
+    
+    # Check knockout matches count
+    assert len(details["r32_matches"]) == 16
+    assert len(details["r16_matches"]) == 8
+    assert len(details["qf_matches"]) == 4
+    assert len(details["sf_matches"]) == 2
+    assert len(details["third_place_match"]) == 1
+    assert len(details["final_match"]) == 1
+    
+    # Check match structure for a knockout match
+    first_r32 = details["r32_matches"][0]
+    assert "team1" in first_r32
+    assert "team2" in first_r32
+    assert "probs" in first_r32
+    assert len(first_r32["probs"]) == 3
+    assert "goals1" in first_r32
+    assert "goals2" in first_r32
+    assert "extra_time" in first_r32
+    assert "winner" in first_r32
+
+
+def test_real_world_seeding_and_indices_order():
+    # Simulate a single group stage run
+    group_standings, all_matches_details = sim.simulate_group_stage(track_details=True)
+    
+    # 1. Verify the match_indices order for Group A
+    # Mexico vs South_Africa (Match 1)
+    # South_Korea vs Czechia (Match 2)
+    # Czechia vs South_Africa (Match 3)
+    # Mexico vs South_Korea (Match 4)
+    # South_Africa vs South_Korea (Match 5)
+    # Czechia vs Mexico (Match 6)
+    group_a_matches = all_matches_details["A"]
+    assert len(group_a_matches) == 6
+    
+    # Matchday 1
+    assert group_a_matches[0]["team1"] == "Mexico" and group_a_matches[0]["team2"] == "South_Africa"
+    assert group_a_matches[1]["team1"] == "South_Korea" and group_a_matches[1]["team2"] == "Czechia"
+    # Matchday 2
+    assert group_a_matches[2]["team1"] == "Czechia" and group_a_matches[2]["team2"] == "South_Africa"
+    assert group_a_matches[3]["team1"] == "Mexico" and group_a_matches[3]["team2"] == "South_Korea"
+    # Matchday 3
+    assert group_a_matches[4]["team1"] == "South_Africa" and group_a_matches[4]["team2"] == "South_Korea"
+    assert group_a_matches[5]["team1"] == "Czechia" and group_a_matches[5]["team2"] == "Mexico"
+    
+    # 2. Verify that real-world seeded results are enforced correctly
+    # Mexico 2-0 South Africa
+    assert group_a_matches[0]["goals1"] == 2
+    assert group_a_matches[0]["goals2"] == 0
+    # South Korea 2-1 Czechia
+    assert group_a_matches[1]["goals1"] == 2
+    assert group_a_matches[1]["goals2"] == 1

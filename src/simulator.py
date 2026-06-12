@@ -13,20 +13,57 @@ from src.third_place_router import assign_third_places
 from src.features import get_squad_features, CONTINENTAL_TOURNAMENTS
 
 # 2026 World Cup Groups and Teams
+# Sources: Official FIFA draw + Kaggle dataset (areezvisram12/fifa-world-cup-2026-match-data-unofficial)
+# Teams listed in order T0, T1, T2, T3 — must match GROUP_FIXTURE_PATTERNS indices below
+# Playoff placeholders are mapped to best-guess teams for simulation purposes:
+#   UEFA Playoff D (Gp A) -> Czechia, UEFA Playoff A (Gp B) -> Bosnia_and_Herzegovina
+#   UEFA Playoff C (Gp D) -> Turkey,  UEFA Playoff B (Gp F) -> Sweden
+#   FIFA Playoff 2 (Gp I) -> Iraq,    FIFA Playoff 1 (Gp K) -> DR_Congo
 GROUPS_2026 = {
-    'A': ['United_States', 'Colombia', 'Morocco', 'Australia'],
-    'B': ['Canada', 'Italy', 'Japan', 'Senegal'],
-    'C': ['Mexico', 'Uruguay', 'South_Korea', 'Poland'],
-    'D': ['Argentina', 'Denmark', 'Ecuador', 'Saudi_Arabia'],
-    'E': ['Brazil', 'Switzerland', 'Cameroon', 'Iran'],
-    'F': ['France', 'Croatia', 'Chile', 'Tunisia'],
-    'G': ['England', 'Peru', 'Nigeria', 'Qatar'],
-    'H': ['Spain', 'Sweden', 'Egypt', 'Costa_Rica'],
-    'I': ['Germany', 'Ukraine', 'Algeria', 'Iraq'],
-    'J': ['Portugal', 'Wales', 'Ghana', 'Panama'],
-    'K': ['Netherlands', 'Austria', 'Mali', 'Jamaica'],
-    'L': ['Belgium', 'Turkey', 'Ivory_Coast', 'New_Zealand']
+    'A': ['Mexico', 'South_Africa', 'South_Korea', 'Czechia'],
+    'B': ['Canada', 'Bosnia_and_Herzegovina', 'Qatar', 'Switzerland'],
+    'C': ['Brazil', 'Morocco', 'Haiti', 'Scotland'],
+    'D': ['United_States', 'Paraguay', 'Australia', 'Turkey'],
+    'E': ['Germany', 'Curacao', 'Ivory_Coast', 'Ecuador'],
+    'F': ['Netherlands', 'Japan', 'Sweden', 'Tunisia'],
+    'G': ['Belgium', 'Egypt', 'Iran', 'New_Zealand'],
+    'H': ['Spain', 'Cape_Verde', 'Saudi_Arabia', 'Uruguay'],
+    'I': ['France', 'Senegal', 'Iraq', 'Norway'],
+    'J': ['Argentina', 'Algeria', 'Austria', 'Jordan'],
+    'K': ['Portugal', 'DR_Congo', 'Uzbekistan', 'Colombia'],
+    'L': ['England', 'Croatia', 'Ghana', 'Panama']
 }
+
+# Official FIFA 2026 fixture order per group, expressed as (T_home_idx, T_away_idx) pairs.
+# Derived from Kaggle dataset: areezvisram12/fifa-world-cup-2026-match-data-unofficial
+# MD = Matchday. Each group plays 6 matches (round-robin of 4 teams).
+# Pattern A/B/C/I: MD1=(0,1),(2,3) | MD2=(3,1),(0,2) | MD3=(3,0),(1,2)
+# Pattern D/E/F/G/H/J/K/L: MD1=(0,1),(2,3) | MD2=(0,2),(3,1) | MD3=(some vary, see below)
+GROUP_FIXTURE_PATTERNS = {
+    # Groups A, B, C follow the same pattern (Matchday 3: playoff vs T0, then T1 vs T2)
+    'A': [(0,1),(2,3),(3,1),(0,2),(3,0),(1,2)],
+    'B': [(0,1),(2,3),(3,1),(0,2),(3,0),(1,2)],
+    'C': [(0,1),(2,3),(3,1),(0,2),(3,0),(1,2)],
+    # Groups D, E, F, G, H, J differ: MD2 starts with (0,2) instead of (3,1)
+    'D': [(0,1),(2,3),(0,2),(3,1),(3,0),(1,2)],
+    'E': [(0,1),(2,3),(0,2),(3,1),(1,2),(3,0)],
+    'F': [(0,1),(2,3),(0,2),(3,1),(1,2),(3,0)],
+    'G': [(0,1),(2,3),(0,2),(3,1),(1,2),(3,0)],
+    'H': [(0,1),(2,3),(0,2),(3,1),(1,2),(3,0)],
+    'I': [(0,1),(2,3),(0,2),(3,1),(3,0),(1,2)],
+    'J': [(0,1),(2,3),(0,2),(3,1),(1,2),(3,0)],
+    'K': [(0,1),(2,3),(0,2),(3,1),(3,0),(1,2)],
+    'L': [(0,1),(2,3),(0,2),(3,1),(3,0),(1,2)],
+}
+
+# Real-world results for matches that have already been played at FIFA WC 2026.
+# Updated as the tournament progresses. Format: (home, away) -> (home_goals, away_goals)
+REAL_WORLD_RESULTS = {
+    # Matchday 1 — June 11, 2026
+    ("Mexico", "South_Africa"): (2, 0),
+    ("South_Korea", "Czechia"): (2, 1),
+}
+
 
 def compare_teams(a, b, group_matches):
     """
@@ -131,11 +168,29 @@ class TournamentSimulator:
         self.matchup_cache = {}
         self._precompute_matchups()
 
+    def _canonical_name(self, team_name):
+        name_spaced = team_name.replace('_', ' ')
+        if name_spaced in self.canonical_mapping:
+            return name_spaced
+        custom_mappings = {
+            "Czechia": "Czech Republic",
+            "Curacao": "Curaçao",
+            "Congo DR": "DR Congo",
+            "DR Congo": "DR Congo",
+            "Congo": "DR Congo"
+        }
+        if name_spaced in custom_mappings:
+            return custom_mappings[name_spaced]
+        if team_name in custom_mappings:
+            return custom_mappings[team_name]
+        return name_spaced
+
     def _get_latest_elo(self, team_name):
-        if team_name not in self.canonical_mapping:
+        canonical_name = self._canonical_name(team_name)
+        if canonical_name not in self.canonical_mapping:
             return 1500.0
-        code = self.canonical_mapping[team_name]['code']
-        elo_file = self.canonical_mapping[team_name]['elo_file']
+        code = self.canonical_mapping[canonical_name]['code']
+        elo_file = self.canonical_mapping[canonical_name]['elo_file']
         tsv_path = os.path.join(self.elo_dir, elo_file)
         if not os.path.exists(tsv_path):
             return 1500.0
@@ -155,10 +210,11 @@ class TournamentSimulator:
 
     def _precompute_team_features(self, team, results_df, squads_df, date_str="2026-06-11"):
         date_cutoff = pd.to_datetime(date_str)
+        canonical_name = self._canonical_name(team)
         
         # 1. World Cup Experience Index
         wc_matches = results_df[
-            ((results_df['home_team'] == team) | (results_df['away_team'] == team)) &
+            ((results_df['home_team'] == canonical_name) | (results_df['away_team'] == canonical_name)) &
             (results_df['tournament'] == 'FIFA World Cup') &
             (results_df['date'] < date_cutoff)
         ]
@@ -175,15 +231,15 @@ class TournamentSimulator:
         experience = (1.0 * total_wc) + (2.0 * recent_wc) + (2.0 * total_ko) + (3.0 * total_qf) + (4.0 * total_sf)
         
         # 2. Squad Features
-        sq_feats = get_squad_features(team, 2026, squads_df)
+        sq_feats = get_squad_features(canonical_name, 2026, squads_df)
         
         # 3. Momentum Score
         # A. Elo Trend over last 365 days
         current_elo = self.starting_elos.get(team, 1500.0)
         elo_365 = current_elo
-        if team in self.canonical_mapping:
-            code = self.canonical_mapping[team]['code']
-            elo_file = self.canonical_mapping[team]['elo_file']
+        if canonical_name in self.canonical_mapping:
+            code = self.canonical_mapping[canonical_name]['code']
+            elo_file = self.canonical_mapping[canonical_name]['elo_file']
             tsv_path = os.path.join(self.elo_dir, elo_file)
             if os.path.exists(tsv_path):
                 df_elo = parse_elo_tsv(tsv_path)
@@ -206,7 +262,7 @@ class TournamentSimulator:
         
         # B. Recent Form (last 20 matches win rate before cutoff)
         team_matches = results_df[
-            ((results_df['home_team'] == team) | (results_df['away_team'] == team)) &
+            ((results_df['home_team'] == canonical_name) | (results_df['away_team'] == canonical_name)) &
             (results_df['date'] < date_cutoff)
         ].sort_values(by='date')
         
@@ -214,7 +270,7 @@ class TournamentSimulator:
         for _, row in team_matches.tail(20).iterrows():
             hs = row['home_score']
             as_ = row['away_score']
-            is_home = (row['home_team'] == team)
+            is_home = (row['home_team'] == canonical_name)
             if hs == as_:
                 outcomes.append(0.5)
             elif (hs > as_ and is_home) or (as_ > hs and not is_home):
@@ -226,7 +282,7 @@ class TournamentSimulator:
         # C. Continental Tournament performance in last 4 years
         four_years_ago = date_cutoff - pd.Timedelta(days=1460)
         cont_matches = results_df[
-            ((results_df['home_team'] == team) | (results_df['away_team'] == team)) &
+            ((results_df['home_team'] == canonical_name) | (results_df['away_team'] == canonical_name)) &
             (results_df['tournament'].isin(CONTINENTAL_TOURNAMENTS)) &
             (results_df['date'] >= four_years_ago) &
             (results_df['date'] < date_cutoff)
@@ -251,7 +307,7 @@ class TournamentSimulator:
         for _, row in team_matches.iloc[::-1].iterrows():
             hs = row['home_score']
             as_ = row['away_score']
-            is_home = (row['home_team'] == team)
+            is_home = (row['home_team'] == canonical_name)
             if hs == as_:
                 unbeaten += 1
             elif (hs > as_ and is_home) or (as_ > hs and not is_home):
@@ -260,10 +316,11 @@ class TournamentSimulator:
                 break
         unbeaten_norm = min(unbeaten / 15.0, 1.0)
         
+        # E. Final Momentum calculation
         momentum = 0.4 * elo_trend_norm + 0.3 * form_20 + 0.2 * cont_perf + 0.1 * unbeaten_norm
         
         # Curated features (coach/squad quality)
-        curated = self.lookup_system.lookup(team, date_str)
+        curated = self.lookup_system.lookup(canonical_name, date_str)
         
         return {
             'elo': current_elo,
@@ -528,36 +585,62 @@ class TournamentSimulator:
                 loser_goals = 2
             return loser_goals, loser_goals + gd, 2
 
-    def simulate_group_stage(self):
+    def simulate_group_stage(self, track_details=False):
         """Simulates the group stage and returns the qualified teams."""
         group_standings = {}
+        all_matches_details = {} if track_details else None
         
         for g_letter, teams in GROUPS_2026.items():
             standings = {t: {'points': 0, 'gd': 0, 'gs': 0, 'elo': self.starting_elos[t], 'team': t} for t in teams}
             group_matches = []
+            group_matches_details = []
             
-            # Play round robin (6 matches)
-            for i in range(len(teams)):
-                for j in range(i + 1, len(teams)):
-                    t1, t2 = teams[i], teams[j]
-                    probs = self.matchup_cache[(t1, t2, 0, 0)]
-                    g1, g2, outcome = self.simulate_match_goals(probs[0], probs[1], probs[2])
+            # Use official FIFA 2026 fixture order for each group.
+            # Patterns derived from Kaggle dataset (areezvisram12/fifa-world-cup-2026-match-data-unofficial).
+            # Each tuple is (home_team_index, away_team_index) into the group's team list.
+            match_indices = GROUP_FIXTURE_PATTERNS[g_letter]
+            for idx1, idx2 in match_indices:
+                t1, t2 = teams[idx1], teams[idx2]
+                probs = self.matchup_cache[(t1, t2, 0, 0)]
+                
+                # Check for real-world results
+                real_score = REAL_WORLD_RESULTS.get((t1, t2))
+                if real_score is not None:
+                    g1, g2 = real_score
+                    outcome = 0 if g1 > g2 else (2 if g2 > g1 else 1)
+                else:
+                    real_score_rev = REAL_WORLD_RESULTS.get((t2, t1))
+                    if real_score_rev is not None:
+                        g2_rev, g1_rev = real_score_rev
+                        g1, g2 = g1_rev, g2_rev
+                        outcome = 0 if g1 > g2 else (2 if g2 > g1 else 1)
+                    else:
+                        g1, g2, outcome = self.simulate_match_goals(probs[0], probs[1], probs[2])
+                
+                if outcome == 0:  # t1 wins
+                    standings[t1]['points'] += 3
+                elif outcome == 2:  # t2 wins
+                    standings[t2]['points'] += 3
+                else:  # draw
+                    standings[t1]['points'] += 1
+                    standings[t2]['points'] += 1
                     
-                    if outcome == 0:  # t1 wins
-                        standings[t1]['points'] += 3
-                    elif outcome == 2:  # t2 wins
-                        standings[t2]['points'] += 3
-                    else:  # draw
-                        standings[t1]['points'] += 1
-                        standings[t2]['points'] += 1
-                        
-                    standings[t1]['gd'] += (g1 - g2)
-                    standings[t1]['gs'] += g1
-                    
-                    standings[t2]['gd'] += (g2 - g1)
-                    standings[t2]['gs'] += g2
-                    
-                    group_matches.append((t1, t2, g1, g2))
+                standings[t1]['gd'] += (g1 - g2)
+                standings[t1]['gs'] += g1
+                
+                standings[t2]['gd'] += (g2 - g1)
+                standings[t2]['gs'] += g2
+                
+                group_matches.append((t1, t2, g1, g2))
+                
+                if track_details:
+                    group_matches_details.append({
+                        "team1": t1,
+                        "team2": t2,
+                        "goals1": int(g1),
+                        "goals2": int(g2),
+                        "probs": [float(p) for p in probs]
+                    })
                     
             # Sort standings based on proper FIFA rules: Points, GD, GS, H2H, then Elo
             sorted_teams = sorted(
@@ -566,10 +649,14 @@ class TournamentSimulator:
                 reverse=True
             )
             group_standings[g_letter] = sorted_teams
+            if track_details:
+                all_matches_details[g_letter] = group_matches_details
             
+        if track_details:
+            return group_standings, all_matches_details
         return group_standings
 
-    def get_qualified_teams(self, group_standings):
+    def get_qualified_teams(self, group_standings, track_details=False):
         """Identifies the 32 teams qualifying for the knockout stage."""
         knockout_teams = {}
         third_placed_teams = []
@@ -578,7 +665,7 @@ class TournamentSimulator:
             knockout_teams[f"1{g_letter}"] = standing[0]['team']
             knockout_teams[f"2{g_letter}"] = standing[1]['team']
             
-            third_team = standing[2]
+            third_team = {k: v for k, v in standing[2].items()}
             third_team['group'] = g_letter
             third_placed_teams.append(third_team)
             
@@ -599,9 +686,17 @@ class TournamentSimulator:
         for g_winner, tp in third_place_routing.items():
             knockout_teams[f"3rd{g_winner}"] = tp['team']
             
+        if track_details:
+            third_place_details = {
+                "all_third_placed": sorted_thirds,
+                "best_eight_thirds": [t['team'] for t in best_eight_thirds],
+                "routing": third_place_routing
+            }
+            return knockout_teams, third_place_details
+            
         return knockout_teams
 
-    def simulate_knockout_match(self, team1, team2, fatigue1, fatigue2):
+    def simulate_knockout_match(self, team1, team2, fatigue1, fatigue2, match_log=None):
         """Simulates a knockout match to determine who advances and their updated fatigue."""
         f1_c = min(int(fatigue1), 5)
         f2_c = min(int(fatigue2), 5)
@@ -610,19 +705,50 @@ class TournamentSimulator:
         
         g1, g2, outcome = self.simulate_match_goals(p_home, p_draw, p_away)
         
+        if match_log is not None:
+            log_entry = {
+                "team1": team1,
+                "team2": team2,
+                "fatigue1": fatigue1,
+                "fatigue2": fatigue2,
+                "probs": [float(p) for p in probs],
+                "goals1": int(g1),
+                "goals2": int(g2),
+                "extra_time": False,
+                "extra_time_winner": None,
+                "penalty_shootout": False,
+                "shootout_p1": None,
+                "shootout_winner": None,
+                "winner": None
+            }
+        
         if outcome == 0:
+            if match_log is not None:
+                log_entry["winner"] = team1
+                match_log.append(log_entry)
             return team1, fatigue1, fatigue2
         elif outcome == 2:
+            if match_log is not None:
+                log_entry["winner"] = team2
+                match_log.append(log_entry)
             return team2, fatigue1, fatigue2
             
         # Extra Time
         fatigue1 += 1
         fatigue2 += 1
+        if match_log is not None:
+            log_entry["extra_time"] = True
+            log_entry["fatigue1"] = fatigue1
+            log_entry["fatigue2"] = fatigue2
         
         et_decided = np.random.rand() < 0.40
         if et_decided:
             p_win_1 = p_home / (p_home + p_away)
             winner = team1 if np.random.rand() < p_win_1 else team2
+            if match_log is not None:
+                log_entry["extra_time_winner"] = winner
+                log_entry["winner"] = winner
+                match_log.append(log_entry)
             return winner, fatigue1, fatigue2
             
         # Penalty shootout
@@ -635,18 +761,34 @@ class TournamentSimulator:
         p_shootout_1 = np.clip(p_shootout_1, 0.15, 0.85)
         
         winner = team1 if np.random.rand() < p_shootout_1 else team2
+        if match_log is not None:
+            log_entry["penalty_shootout"] = True
+            log_entry["shootout_p1"] = float(p_shootout_1)
+            log_entry["shootout_winner"] = winner
+            log_entry["winner"] = winner
+            match_log.append(log_entry)
         return winner, fatigue1, fatigue2
 
-    def simulate_tournament(self):
+    def simulate_tournament(self, track_details=False):
         """Simulates a single full tournament from group stage to the final."""
         # 1. Group Stage
-        group_standings = self.simulate_group_stage()
-        
-        # 2. Qualified Teams & Routing
-        ko_teams = self.get_qualified_teams(group_standings)
+        if track_details:
+            group_standings, group_matches_details = self.simulate_group_stage(track_details=True)
+            ko_teams, third_place_details = self.get_qualified_teams(group_standings, track_details=True)
+        else:
+            group_standings = self.simulate_group_stage()
+            ko_teams = self.get_qualified_teams(group_standings)
         
         # Track team fatigue
         fatigue = {t: 0 for t in self.starting_elos.keys()}
+        
+        # Logs if tracking details
+        r32_log = [] if track_details else None
+        r16_log = [] if track_details else None
+        qf_log = [] if track_details else None
+        sf_log = [] if track_details else None
+        tp_log = [] if track_details else None
+        final_log = [] if track_details else None
         
         # 3. Round of 32
         r32_matches = [
@@ -670,7 +812,7 @@ class TournamentSimulator:
         
         r16_teams = []
         for t1, t2 in r32_matches:
-            w, f1, f2 = self.simulate_knockout_match(t1, t2, fatigue[t1], fatigue[t2])
+            w, f1, f2 = self.simulate_knockout_match(t1, t2, fatigue[t1], fatigue[t2], match_log=r32_log)
             fatigue[t1] = f1
             fatigue[t2] = f2
             r16_teams.append(w)
@@ -689,7 +831,7 @@ class TournamentSimulator:
         
         qf_teams = []
         for t1, t2 in r16_matches:
-            w, f1, f2 = self.simulate_knockout_match(t1, t2, fatigue[t1], fatigue[t2])
+            w, f1, f2 = self.simulate_knockout_match(t1, t2, fatigue[t1], fatigue[t2], match_log=r16_log)
             fatigue[t1] = f1
             fatigue[t2] = f2
             qf_teams.append(w)
@@ -704,7 +846,7 @@ class TournamentSimulator:
         
         sf_teams = []
         for t1, t2 in qf_matches:
-            w, f1, f2 = self.simulate_knockout_match(t1, t2, fatigue[t1], fatigue[t2])
+            w, f1, f2 = self.simulate_knockout_match(t1, t2, fatigue[t1], fatigue[t2], match_log=qf_log)
             fatigue[t1] = f1
             fatigue[t2] = f2
             sf_teams.append(w)
@@ -718,7 +860,7 @@ class TournamentSimulator:
         final_teams = []
         third_place_teams = []
         for t1, t2 in sf_matches:
-            w, f1, f2 = self.simulate_knockout_match(t1, t2, fatigue[t1], fatigue[t2])
+            w, f1, f2 = self.simulate_knockout_match(t1, t2, fatigue[t1], fatigue[t2], match_log=sf_log)
             fatigue[t1] = f1
             fatigue[t2] = f2
             final_teams.append(w)
@@ -729,16 +871,18 @@ class TournamentSimulator:
         # 7. Third Place Match
         tp_winner, _, _ = self.simulate_knockout_match(
             third_place_teams[0], third_place_teams[1],
-            fatigue[third_place_teams[0]], fatigue[third_place_teams[1]]
+            fatigue[third_place_teams[0]], fatigue[third_place_teams[1]],
+            match_log=tp_log
         )
         
         # 8. Final
         champion, _, _ = self.simulate_knockout_match(
             final_teams[0], final_teams[1],
-            fatigue[final_teams[0]], fatigue[final_teams[1]]
+            fatigue[final_teams[0]], fatigue[final_teams[1]],
+            match_log=final_log
         )
         
-        return {
+        result = {
             "group_standings": group_standings,
             "r32_teams": list(ko_teams.values()),
             "r16_teams": r16_teams,
@@ -748,6 +892,21 @@ class TournamentSimulator:
             "runner_up": final_teams[0] if champion == final_teams[1] else final_teams[1],
             "champion": champion
         }
+        
+        if track_details:
+            result["details"] = {
+                "group_matches": group_matches_details,
+                "group_standings_clean": {g: [{k: v for k, v in t.items()} for t in standing] for g, standing in group_standings.items()},
+                "third_place_routing": third_place_details,
+                "r32_matches": r32_log,
+                "r16_matches": r16_log,
+                "qf_matches": qf_log,
+                "sf_matches": sf_log,
+                "third_place_match": tp_log,
+                "final_match": final_log
+            }
+            
+        return result
 
     def run_monte_carlo(self, num_simulations=1000, num_batches=10):
         """Runs the simulation in batches and returns mean probabilities and 95% confidence intervals."""

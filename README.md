@@ -124,6 +124,8 @@ The dashboard consists of seven interactive tabs:
 
 https://github.com/mohamedazimal27/fifa2026-predictor/assets/walkthrough_consensus_demo.webm
 
+[![Watch Demo](assets/github-social-preview.png)](https://youtu.be/CRL02I5e2SM)
+
 > 📥 [Download demo video](assets/walkthrough_consensus_demo.webm) if the player doesn't load above.
 
 

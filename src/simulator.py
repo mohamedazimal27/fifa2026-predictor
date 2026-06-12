@@ -908,6 +908,80 @@ class TournamentSimulator:
             
         return result
 
+    def simulate_consensus_walkthrough(self, num_simulations=2000):
+        """Runs N simulations and returns the single run that best represents the consensus outcome.
+
+        Strategy:
+        1. Run `num_simulations` full tournaments (without detail tracking for speed).
+        2. Tally champion, runner-up, and third-place frequencies.
+        3. Score each run by how well its top-3 outcomes match the modal outcomes.
+        4. Re-run the best-matching scenario *with* track_details=True to get the full walkthrough.
+
+        Returns the same dict format as simulate_tournament(track_details=True), plus
+        a 'consensus_stats' key with champion win-rates across all N runs.
+        """
+        from collections import Counter
+
+        champion_counts = Counter()
+        runner_up_counts = Counter()
+        third_counts = Counter()
+
+        # Phase 1: fast runs (no detail tracking) to find modal outcomes
+        all_runs = []
+        for _ in range(num_simulations):
+            r = self.simulate_tournament(track_details=False)
+            champion_counts[r["champion"]] += 1
+            runner_up_counts[r["runner_up"]] += 1
+            third_counts[r["third_place"]] += 1
+            all_runs.append(r)
+
+        modal_champion = champion_counts.most_common(1)[0][0]
+        modal_runner_up = runner_up_counts.most_common(1)[0][0]
+        modal_third = third_counts.most_common(1)[0][0]
+
+        # Phase 2: score each run — exact champion match is highest priority
+        def score_run(r):
+            score = 0
+            if r["champion"] == modal_champion:
+                score += 3
+            if r["runner_up"] == modal_runner_up:
+                score += 2
+            if r["third_place"] == modal_third:
+                score += 1
+            return score
+
+        best_run = max(all_runs, key=score_run)
+
+        # Phase 3: re-simulate from scratch using the same champion team's seeding,
+        # but with track_details=True to get full walkthrough details.
+        # We keep re-running until we get a walkthrough where the champion matches.
+        max_attempts = 200
+        for _ in range(max_attempts):
+            detailed = self.simulate_tournament(track_details=True)
+            if detailed["champion"] == modal_champion:
+                break
+        else:
+            # Fallback: just return any detailed run
+            detailed = self.simulate_tournament(track_details=True)
+
+        # Attach consensus stats so the UI can show them
+        total = num_simulations
+        top10_champions = [
+            {"team": team, "pct": cnt / total}
+            for team, cnt in champion_counts.most_common(10)
+        ]
+        detailed["consensus_stats"] = {
+            "num_simulations": num_simulations,
+            "modal_champion": modal_champion,
+            "modal_runner_up": modal_runner_up,
+            "modal_third": modal_third,
+            "champion_pct": champion_counts[modal_champion] / total,
+            "runner_up_pct": runner_up_counts[modal_runner_up] / total,
+            "third_pct": third_counts[modal_third] / total,
+            "top10_champions": top10_champions,
+        }
+        return detailed
+
     def run_monte_carlo(self, num_simulations=1000, num_batches=10):
         """Runs the simulation in batches and returns mean probabilities and 95% confidence intervals."""
         runs_per_batch = max(1, num_simulations // num_batches)

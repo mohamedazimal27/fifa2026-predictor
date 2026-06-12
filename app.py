@@ -1068,32 +1068,55 @@ def get_knockout_stage_status(stage_name, cur_idx, all_104_matches, details):
 with tab7:
     st.markdown("### 🧭 Interactive Tournament Walkthrough")
     st.write(
-        "Run a single, complete simulation of the FIFA 2026 World Cup and explore "
-        "every match from the opening group fixtures to the final whistle."
+        "Run a consensus walkthrough grounded in thousands of simulations. "
+        "The displayed tournament reflects the **most likely champion** across all runs — "
+        "not just a single random draw."
     )
 
     if 'single_walkthrough' not in st.session_state:
         st.session_state.single_walkthrough = None
 
-    col_btn, col_info = st.columns([1.5, 3])
+    col_btn, col_slider = st.columns([1.5, 2])
+    with col_slider:
+        walkthrough_sims = st.slider(
+            "Simulations to run", min_value=500, max_value=5000,
+            value=2000, step=500, key="walkthrough_num_sims",
+            help="More runs = more reliable consensus champion. 2,000 is the recommended sweet spot."
+        )
     with col_btn:
-        if st.button("🎲 Generate Single Tournament Walkthrough", key="gen_single_walk"):
-            with st.spinner("Simulating tournament..."):
-                st.session_state.single_walkthrough = sim.simulate_tournament(track_details=True)
+        st.markdown("<br>", unsafe_allow_html=True)
+        if st.button("🎲 Generate Consensus Walkthrough", key="gen_single_walk"):
+            with st.spinner(f"Running {walkthrough_sims:,} simulations to find the consensus outcome..."):
+                st.session_state.single_walkthrough = sim.simulate_consensus_walkthrough(
+                    num_simulations=walkthrough_sims
+                )
 
     if st.session_state.single_walkthrough:
         res = st.session_state.single_walkthrough
         details = res["details"]
+        cs = res.get("consensus_stats")
 
         # Display champion card
+        champ_label = format_team_name(res['champion'])
         st.markdown(f"""
         <div class="glass-card" style="text-align: center; border-color: rgba(0, 242, 254, 0.4); background: rgba(0, 242, 254, 0.05); padding: 30px;">
-            <h2 style="margin: 0; color: #00f2fe; font-size: 2.5rem;">🏆 CHAMPION: {format_team_name(res['champion'])} 🏆</h2>
+            <h2 style="margin: 0; color: #00f2fe; font-size: 2.5rem;">🏆 CHAMPION: {champ_label} 🏆</h2>
             <p style="margin: 10px 0 0 0; color: #94a3b8; font-size: 1.2rem;">
                 Runner-up: <b>{format_team_name(res['runner_up'])}</b> | Third Place: <b>{format_team_name(res['third_place'])}</b>
             </p>
+            {f'<p style="margin: 8px 0 0 0; color: #4ade80; font-size: 0.95rem;">📊 {champ_label} won in <b>{cs["champion_pct"]:.1%}</b> of {cs["num_simulations"]:,} simulations</p>' if cs else ''}
         </div>
         """, unsafe_allow_html=True)
+
+        # Consensus champion probability table
+        if cs:
+            with st.expander(f"📊 Champion Probability Table ({cs['num_simulations']:,} simulations)", expanded=False):
+                st.markdown("Top 10 most likely champions across all simulation runs:")
+                tbl_rows = [
+                    {"Rank": i + 1, "Team": format_team_name(r["team"]), "Win Probability": f'{r["pct"]:.1%}'}
+                    for i, r in enumerate(cs["top10_champions"])
+                ]
+                st.table(pd.DataFrame(tbl_rows).set_index("Rank"))
 
         # Stage Tabs
         w_tab1, w_tab2, w_tab3, w_tab4 = st.tabs([

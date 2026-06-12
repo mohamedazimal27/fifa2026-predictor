@@ -118,6 +118,15 @@ The dashboard consists of seven interactive tabs:
 | **🧭 Interactive Tournament Walkthrough** | |
 | ![Interactive Walkthrough](assets/walkthrough_dashboard.png) | |
 
+### 🎬 Live Demo — Consensus Walkthrough (2,500 simulations)
+
+> The walkthrough tab runs N Monte Carlo simulations, identifies the most likely champion, and displays a coherent match-by-match tournament timeline backed by statistical consensus.
+
+https://github.com/mohamedazimal27/fifa2026-predictor/assets/walkthrough_consensus_demo.webm
+
+> 📥 [Download demo video](assets/walkthrough_consensus_demo.webm) if the player doesn't load above.
+
+
 ---
 
 ## 🚀 Getting Started
